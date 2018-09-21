@@ -11,10 +11,11 @@ import android.widget.TextView;
 
 import edu.uoc.gruizto.mybooks.dummy.DummyContent;
 import edu.uoc.gruizto.mybooks.model.BookItem;
+import edu.uoc.gruizto.mybooks.activity.BookListActivity;
 
 /**
  * A fragment representing a single Item detail screen.
- * This fragment is either contained in a {@link ItemListActivity}
+ * This fragment is either contained in a {@link BookListActivity}
  * in two-pane mode (on tablets) or a {@link ItemDetailActivity}
  * on handsets.
  */

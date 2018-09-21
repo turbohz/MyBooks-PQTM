@@ -11,11 +11,13 @@ import android.support.v7.app.ActionBar;
 import android.support.v4.app.NavUtils;
 import android.view.MenuItem;
 
+import edu.uoc.gruizto.mybooks.activity.BookListActivity;
+
 /**
  * An activity representing a single Item detail screen. This
  * activity is only used on narrow width devices. On tablet-size devices,
  * item details are presented side-by-side with a list of items
- * in a {@link ItemListActivity}.
+ * in a {@link BookListActivity}.
  */
 public class ItemDetailActivity extends AppCompatActivity {
 
@@ -75,7 +77,7 @@ public class ItemDetailActivity extends AppCompatActivity {
             //
             // http://developer.android.com/design/patterns/navigation.html#up-vs-back
             //
-            NavUtils.navigateUpTo(this, new Intent(this, ItemListActivity.class));
+            NavUtils.navigateUpTo(this, new Intent(this, BookListActivity.class));
             return true;
         }
         return super.onOptionsItemSelected(item);
