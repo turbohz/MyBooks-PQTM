@@ -16,7 +16,7 @@ import edu.uoc.gruizto.mybooks.activity.BookListActivity;
 /**
  * A fragment representing a single Item detail screen.
  * This fragment is either contained in a {@link BookListActivity}
- * in two-pane mode (on tablets) or a {@link ItemDetailActivity}
+ * in two-pane mode (on tablets) or a {@link edu.uoc.gruizto.mybooks.activity.BookDetailActivity}
  * on handsets.
  */
 public class ItemDetailFragment extends Fragment {

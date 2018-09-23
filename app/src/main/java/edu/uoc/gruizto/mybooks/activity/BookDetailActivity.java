@@ -1,4 +1,4 @@
-package edu.uoc.gruizto.mybooks;
+package edu.uoc.gruizto.mybooks.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -11,7 +11,8 @@ import android.support.v7.app.ActionBar;
 import android.support.v4.app.NavUtils;
 import android.view.MenuItem;
 
-import edu.uoc.gruizto.mybooks.activity.BookListActivity;
+import edu.uoc.gruizto.mybooks.ItemDetailFragment;
+import edu.uoc.gruizto.mybooks.R;
 
 /**
  * An activity representing a single Item detail screen. This
@@ -19,7 +20,7 @@ import edu.uoc.gruizto.mybooks.activity.BookListActivity;
  * item details are presented side-by-side with a list of items
  * in a {@link BookListActivity}.
  */
-public class ItemDetailActivity extends AppCompatActivity {
+public class BookDetailActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

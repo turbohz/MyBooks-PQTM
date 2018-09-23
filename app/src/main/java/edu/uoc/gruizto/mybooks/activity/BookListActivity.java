@@ -15,7 +15,6 @@ import android.widget.TextView;
 
 import java.util.List;
 
-import edu.uoc.gruizto.mybooks.ItemDetailActivity;
 import edu.uoc.gruizto.mybooks.ItemDetailFragment;
 import edu.uoc.gruizto.mybooks.R;
 import edu.uoc.gruizto.mybooks.dummy.DummyContent;
@@ -107,7 +106,7 @@ public class BookListActivity extends AppCompatActivity {
                             .commit();
                 } else {
                     Context context = view.getContext();
-                    Intent intent = new Intent(context, ItemDetailActivity.class);
+                    Intent intent = new Intent(context, BookDetailActivity.class);
                     intent.putExtra(ItemDetailFragment.ARG_ITEM_ID, item.id);
 
                     context.startActivity(intent);
