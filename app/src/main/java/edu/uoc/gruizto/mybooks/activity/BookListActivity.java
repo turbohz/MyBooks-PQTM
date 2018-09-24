@@ -62,7 +62,7 @@ public class BookListActivity extends AppCompatActivity {
         // Recycler Views are an evolution of List Views
         // https://developer.android.com/guide/topics/ui/layout/recyclerview
 
-        RecyclerView recyclerView = findViewById(R.id.item_list);
+        RecyclerView recyclerView = findViewById(R.id.book_list);
         assert recyclerView != null;
         recyclerView.setAdapter(
                 new BookListActivity.SimpleItemRecyclerViewAdapter(
