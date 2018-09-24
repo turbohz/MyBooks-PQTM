@@ -15,8 +15,8 @@ import android.widget.TextView;
 
 import java.util.List;
 
-import edu.uoc.gruizto.mybooks.ItemDetailFragment;
 import edu.uoc.gruizto.mybooks.R;
+import edu.uoc.gruizto.mybooks.fragment.BookDetailFragment;
 import edu.uoc.gruizto.mybooks.model.BookItem;
 import edu.uoc.gruizto.mybooks.model.BookRepository;
 
@@ -96,8 +96,8 @@ public class BookListActivity extends AppCompatActivity {
                 BookItem item = (BookItem) view.getTag();
                 if (mTwoPane) {
                     Bundle arguments = new Bundle();
-                    arguments.putString(ItemDetailFragment.ARG_ITEM_ID, item.id);
-                    ItemDetailFragment fragment = new ItemDetailFragment();
+                    arguments.putString(BookDetailFragment.ARG_ITEM_ID, item.id);
+                    BookDetailFragment fragment = new BookDetailFragment();
                     fragment.setArguments(arguments);
                     mParentActivity.getSupportFragmentManager().beginTransaction()
                             .replace(R.id.item_detail_container, fragment)
@@ -105,7 +105,7 @@ public class BookListActivity extends AppCompatActivity {
                 } else {
                     Context context = view.getContext();
                     Intent intent = new Intent(context, BookDetailActivity.class);
-                    intent.putExtra(ItemDetailFragment.ARG_ITEM_ID, item.id);
+                    intent.putExtra(BookDetailFragment.ARG_ITEM_ID, item.id);
 
                     context.startActivity(intent);
                 }

@@ -25,6 +25,6 @@ public class BookItem {
 
     @Override
     public String toString() {
-        return String.format("BookItem:%1:%2", this.id, this.title);
+        return String.format("BookItem:%s:%s", this.id, this.title);
     }
 }
