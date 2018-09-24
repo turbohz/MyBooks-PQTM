@@ -17,8 +17,8 @@ import java.util.List;
 
 import edu.uoc.gruizto.mybooks.ItemDetailFragment;
 import edu.uoc.gruizto.mybooks.R;
-import edu.uoc.gruizto.mybooks.dummy.DummyContent;
 import edu.uoc.gruizto.mybooks.model.BookItem;
+import edu.uoc.gruizto.mybooks.model.BookRepository;
 
 public class BookListActivity extends AppCompatActivity {
 
@@ -67,7 +67,7 @@ public class BookListActivity extends AppCompatActivity {
         recyclerView.setAdapter(
                 new BookListActivity.SimpleItemRecyclerViewAdapter(
                         this,
-                        DummyContent.ITEMS,
+                        BookRepository.BOOKS,
                         mTwoPane
                 )
         );
