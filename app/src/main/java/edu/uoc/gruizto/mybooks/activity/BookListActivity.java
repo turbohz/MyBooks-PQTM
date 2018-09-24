@@ -37,8 +37,6 @@ public class BookListActivity extends AppCompatActivity {
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-//        toolbar.setTitle(getTitle() + " : BookListActivity");
-        toolbar.setTitle("FOOBAR");
 
         // Set up (floating) Action Button
 
