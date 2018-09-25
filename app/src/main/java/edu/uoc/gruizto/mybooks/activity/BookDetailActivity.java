@@ -54,14 +54,18 @@ public class BookDetailActivity extends AppCompatActivity {
         // http://developer.android.com/guide/components/fragments.html
         //
         if (savedInstanceState == null) {
-            // Create the detail fragment and add it to the activity
-            // using a fragment transaction.
+            // create fragment state bundle
             Bundle arguments = new Bundle();
-            arguments.putString(BookDetailFragment.ARG_ITEM_ID,
-                    getIntent().getStringExtra(BookDetailFragment.ARG_ITEM_ID));
+            arguments.putString(
+                    BookDetailFragment.ARG_ITEM_ID,
+                    getIntent().getStringExtra(BookDetailFragment.ARG_ITEM_ID)
+            );
+            // create the detail fragment, and provide it with the Bundle
             BookDetailFragment fragment = new BookDetailFragment();
             fragment.setArguments(arguments);
-            getSupportFragmentManager().beginTransaction()
+            // add it to the activity back stack, using a fragment transaction
+            getSupportFragmentManager()
+                    .beginTransaction()
                     .add(R.id.item_detail_container, fragment)
                     .commit();
         }
