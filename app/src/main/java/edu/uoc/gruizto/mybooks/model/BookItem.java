@@ -5,7 +5,7 @@ import java.util.Date;
 
 public class BookItem {
 
-    private static final String DEFAULT_COVER_URL = "";
+    private static final String DEFAULT_COVER_URL = "https://i.pinimg.com/564x/27/7a/0f/277a0f2733bc01ec7710a51faca1de31.jpg";
 
     public String id;
     public String title;
