@@ -13,7 +13,7 @@ import edu.uoc.gruizto.mybooks.R;
 public class BookRepository {
 
     /**
-     * An list of sample book items.
+     * A list of sample book items.
      */
     public static final List<BookItem> BOOKS = new ArrayList<BookItem>();
 
