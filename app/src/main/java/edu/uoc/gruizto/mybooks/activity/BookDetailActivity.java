@@ -63,7 +63,7 @@ public class BookDetailActivity extends AppCompatActivity {
             // create the detail fragment, and provide it with the Bundle
             BookDetailFragment fragment = new BookDetailFragment();
             fragment.setArguments(arguments);
-            // add it to the activity back stack, using a fragment transaction
+            // add it to the activity, using a fragment manager transaction
             getSupportFragmentManager()
                     .beginTransaction()
                     .add(R.id.item_detail_container, fragment)
