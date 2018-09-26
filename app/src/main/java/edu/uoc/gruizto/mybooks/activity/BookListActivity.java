@@ -77,13 +77,13 @@ public class BookListActivity extends AppCompatActivity {
             extends RecyclerView.Adapter<BookListActivity.SimpleItemRecyclerViewAdapter.ViewHolder> {
 
         class ViewHolder extends RecyclerView.ViewHolder {
-            final TextView mIdView;
-            final TextView mContentView;
+            final TextView titleView;
+            final TextView authorView;
 
             ViewHolder(View view) {
                 super(view);
-                mIdView = view.findViewById(R.id.id_text);
-                mContentView = view.findViewById(R.id.content);
+                titleView = view.findViewById(R.id.item_list_title);
+                authorView = view.findViewById(R.id.item_list_author);
             }
         }
 
@@ -133,8 +133,8 @@ public class BookListActivity extends AppCompatActivity {
 
         @Override
         public void onBindViewHolder(final BookListActivity.SimpleItemRecyclerViewAdapter.ViewHolder holder, int position) {
-            holder.mIdView.setText(mValues.get(position).id);
-            holder.mContentView.setText(mValues.get(position).title);
+            holder.titleView.setText(mValues.get(position).title);
+            holder.authorView.setText(mValues.get(position).author);
             // store BookItem instance as a TAG
             holder.itemView.setTag(mValues.get(position));
             holder.itemView.setOnClickListener(mOnClickListener);
