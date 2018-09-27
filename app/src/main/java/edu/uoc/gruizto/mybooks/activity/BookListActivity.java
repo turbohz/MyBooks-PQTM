@@ -2,7 +2,9 @@ package edu.uoc.gruizto.mybooks.activity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.os.Bundle;
+import android.support.annotation.ColorRes;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -138,6 +140,14 @@ public class BookListActivity extends AppCompatActivity {
             // store BookItem instance as a TAG
             holder.itemView.setTag(mValues.get(position));
             holder.itemView.setOnClickListener(mOnClickListener);
+            // update row color
+            if (position % 2 == 0) {
+                @ColorRes int backgroundColor = R.color.colorPrimaryLighter;
+                Resources resources = holder.itemView.getContext().getResources();
+                holder.itemView.setBackgroundColor(resources.getColor(backgroundColor));
+            } else {
+                holder.itemView.setBackgroundColor(0);
+            }
         }
 
         @Override
