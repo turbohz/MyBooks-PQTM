@@ -141,6 +141,7 @@ public class BookListActivity extends AppCompatActivity {
             holder.itemView.setTag(mValues.get(position));
             holder.itemView.setOnClickListener(mOnClickListener);
             // update row color
+            // @FIXME: Exercise requires 2 different layouts, chosen in the “onCreateViewHolder” method
             if (position % 2 == 1) {
                 @ColorRes int backgroundColor = R.color.colorPrimaryLighter;
                 Resources resources = holder.itemView.getContext().getResources();
