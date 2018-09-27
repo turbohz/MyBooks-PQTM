@@ -38,8 +38,9 @@ public class BookRepository {
     private static BookItem createDummyBook(int position) {
         BookItem book = new BookItem();
         book.id = String.valueOf(position);
-        book.title = "Book #" + position;
+        book.title = "Title for Book #" + position;
         book.description = "Description for Book #"+ position;
+        book.author = "Author for Book #"+ position;
         return book;
     }
 }
