@@ -4,7 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
-import android.support.annotation.ColorRes;
+import android.support.annotation.LayoutRes;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -89,6 +89,8 @@ public class BookListActivity extends AppCompatActivity {
             }
         }
 
+        private static final int ODD_ROW_VIEW_TYPE = 0;
+        private static final int EVEN_ROW_VIEW_TYPE = 1;
         private final BookListActivity mParentActivity;
         private final List<BookItem> mValues;
         private final boolean mTwoPane;
@@ -127,9 +129,29 @@ public class BookListActivity extends AppCompatActivity {
         }
 
         @Override
+        public int getItemViewType(int position) {
+            // HEADSUP! first "position" is 0, but we'll count rows starting from 1, which is more natural
+            // position 0,2,4 .. will then be odd rows
+            return (position % 2 == 0) ? ODD_ROW_VIEW_TYPE : EVEN_ROW_VIEW_TYPE;
+        }
+
+        @Override
         public BookListActivity.SimpleItemRecyclerViewAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View view = LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.item_list_content_odd, parent, false);
+
+            @LayoutRes int layout;
+
+            switch (viewType) {
+                case ODD_ROW_VIEW_TYPE:
+                    layout = R.layout.item_list_content_odd;
+                    break;
+                case EVEN_ROW_VIEW_TYPE:
+                    layout = R.layout.item_list_content_even;
+                    break;
+                default:
+                    throw new IllegalArgumentException("Unexpected viewType:"+viewType);
+            }
+
+            View view = LayoutInflater.from(parent.getContext()).inflate(layout, parent, false);
             return new BookListActivity.SimpleItemRecyclerViewAdapter.ViewHolder(view);
         }
 
@@ -140,15 +162,6 @@ public class BookListActivity extends AppCompatActivity {
             // store BookItem instance as a TAG
             holder.itemView.setTag(mValues.get(position));
             holder.itemView.setOnClickListener(mOnClickListener);
-            // update row color
-            // @FIXME: Exercise requires 2 different layouts, chosen in the “onCreateViewHolder” method
-            if (position % 2 == 1) {
-                @ColorRes int backgroundColor = R.color.colorPrimaryLighter;
-                Resources resources = holder.itemView.getContext().getResources();
-                holder.itemView.setBackgroundColor(resources.getColor(backgroundColor));
-            } else {
-                holder.itemView.setBackgroundColor(0);
-            }
         }
 
         @Override
