@@ -129,7 +129,7 @@ public class BookListActivity extends AppCompatActivity {
         @Override
         public BookListActivity.SimpleItemRecyclerViewAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             View view = LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.item_list_content, parent, false);
+                    .inflate(R.layout.item_list_content_odd, parent, false);
             return new BookListActivity.SimpleItemRecyclerViewAdapter.ViewHolder(view);
         }
 

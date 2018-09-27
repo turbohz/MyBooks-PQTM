@@ -28,7 +28,7 @@
         app:layoutManager="android.support.v7.widget.LinearLayoutManager"
 
         tools:context=".activity.BookListActivity"
-        tools:listitem="@layout/item_list_content" />
+        tools:listitem="@layout/item_list_content_odd" />
 
     <FrameLayout
         android:id="@+id/item_detail_container"
