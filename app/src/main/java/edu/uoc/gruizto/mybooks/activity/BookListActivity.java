@@ -141,7 +141,7 @@ public class BookListActivity extends AppCompatActivity {
             holder.itemView.setTag(mValues.get(position));
             holder.itemView.setOnClickListener(mOnClickListener);
             // update row color
-            if (position % 2 == 0) {
+            if (position % 2 == 1) {
                 @ColorRes int backgroundColor = R.color.colorPrimaryLighter;
                 Resources resources = holder.itemView.getContext().getResources();
                 holder.itemView.setBackgroundColor(resources.getColor(backgroundColor));
