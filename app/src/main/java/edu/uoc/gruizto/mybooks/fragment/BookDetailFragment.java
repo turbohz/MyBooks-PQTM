@@ -69,9 +69,21 @@ public class BookDetailFragment extends Fragment {
 
         View rootView = inflater.inflate(R.layout.item_detail, container, false);
 
-        // Show the book description in a TextView.
+        // Show the book details
+
         if (book != null) {
-            ((TextView) rootView.findViewById(R.id.item_detail)).setText(book.description);
+
+            StringBuilder builder = new StringBuilder();
+            String newLine = "\n";
+            builder
+                    .append(book.title)
+                    .append(newLine)
+                    .append(String.format("%1$te/%1$tm/%1$tY", book.publicationDate))
+                    .append(newLine)
+                    .append(book.description)
+            ;
+
+            ((TextView) rootView.findViewById(R.id.item_detail)).setText(builder.toString());
         }
 
         return rootView;
