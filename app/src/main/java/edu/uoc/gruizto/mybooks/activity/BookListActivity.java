@@ -65,11 +65,9 @@ public class BookListActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-                // snackbar is similar to a toast, but can have behavior
-
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+            // snackbar is similar to a toast, but can have behavior
+            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                    .setAction("Action", null).show();
             }
         });
 
@@ -86,11 +84,11 @@ public class BookListActivity extends AppCompatActivity {
         RecyclerView recyclerView = findViewById(R.id.book_list);
         assert recyclerView != null;
         recyclerView.setAdapter(
-                new BookListActivity.SimpleItemRecyclerViewAdapter(
-                        this,
-                        BookRepository.BOOKS,
-                        mTwoPane
-                )
+            new BookListActivity.SimpleItemRecyclerViewAdapter(
+                this,
+                BookRepository.BOOKS,
+                mTwoPane
+            )
         );
 
         // Connect to Firebase database
@@ -115,10 +113,8 @@ public class BookListActivity extends AppCompatActivity {
                         Log.w(BookListActivity.TAG, "signInWithEmail:failure", task.getException());
                         Toast.makeText(activity, "Authentication failed.", Toast.LENGTH_SHORT).show();
                     }
-
-                    // ...
-                    }
-        });
+                }
+            });
     }
 
     public static class SimpleItemRecyclerViewAdapter
@@ -143,26 +139,26 @@ public class BookListActivity extends AppCompatActivity {
         private final View.OnClickListener mOnClickListener = new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                BookItem item = (BookItem) view.getTag();
-                if (mTwoPane) {
-                    // create fragment state bundle
-                    Bundle arguments = new Bundle();
-                    arguments.putString(BookDetailFragment.ARG_ITEM_ID, item.id);
-                    // create the detail fragment, and provide it with the Bundle
-                    BookDetailFragment fragment = new BookDetailFragment();
-                    fragment.setArguments(arguments);
-                    // add it to the activity back stack, using a fragment transaction
-                    mParentActivity.getSupportFragmentManager()
-                            .beginTransaction()
-                            .replace(R.id.item_detail_container, fragment)
-                            .commit();
-                } else {
-                    Context context = view.getContext();
-                    Intent intent = new Intent(context, BookDetailActivity.class);
-                    intent.putExtra(BookDetailFragment.ARG_ITEM_ID, item.id);
+            BookItem item = (BookItem) view.getTag();
+            if (mTwoPane) {
+                // create fragment state bundle
+                Bundle arguments = new Bundle();
+                arguments.putString(BookDetailFragment.ARG_ITEM_ID, item.id);
+                // create the detail fragment, and provide it with the Bundle
+                BookDetailFragment fragment = new BookDetailFragment();
+                fragment.setArguments(arguments);
+                // add it to the activity back stack, using a fragment transaction
+                mParentActivity.getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.item_detail_container, fragment)
+                        .commit();
+            } else {
+                Context context = view.getContext();
+                Intent intent = new Intent(context, BookDetailActivity.class);
+                intent.putExtra(BookDetailFragment.ARG_ITEM_ID, item.id);
 
-                    context.startActivity(intent);
-                }
+                context.startActivity(intent);
+            }
             }
         };
 
