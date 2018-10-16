@@ -2,7 +2,6 @@ package edu.uoc.gruizto.mybooks.activity;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
@@ -27,11 +26,13 @@ import edu.uoc.gruizto.mybooks.model.BookRepository;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 public class BookListActivity extends AppCompatActivity {
 
@@ -43,7 +44,7 @@ public class BookListActivity extends AppCompatActivity {
     private boolean mTwoPane;
 
     private FirebaseAuth mAuth;
-    private FirebaseDatabase database;
+    private FirebaseDatabase mDB;
 
     // FIXME: this should not be hardcoded, and secrets should not be stored in the app
     private static final String USER_EMAIL = "gruizto@uoc.edu";
@@ -96,9 +97,27 @@ public class BookListActivity extends AppCompatActivity {
         final BookListActivity activity = this;
 
         mAuth = FirebaseAuth.getInstance();
-        database = FirebaseDatabase.getInstance();
+        mDB = FirebaseDatabase.getInstance();
 
-        mAuth.signInWithEmailAndPassword(USER_EMAIL, USER_PASSWORD)
+        mDB
+            .getReference()
+            .addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    DataSnapshot books = dataSnapshot.child("books");
+                    for (DataSnapshot book : books.getChildren()) {
+                        Log.i(BookListActivity.TAG, book.getValue(Object.class).toString());
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+                    Log.e(BookListActivity.TAG, "ValueEventListener:" + databaseError);
+                }
+            });
+
+        mAuth
+            .signInWithEmailAndPassword(USER_EMAIL, USER_PASSWORD)
             .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                 @Override
                 public void onComplete(@NonNull Task<AuthResult> task) {
