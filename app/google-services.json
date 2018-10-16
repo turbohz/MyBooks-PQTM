@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "569194429077",
+    "firebase_url": "https://my-books-19d9b.firebaseio.com",
+    "project_id": "my-books-19d9b",
+    "storage_bucket": "my-books-19d9b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:569194429077:android:f114a38a56fa86d4",
+        "android_client_info": {
+          "package_name": "edu.uoc.gruizto.mybooks"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "569194429077-p50b5jav2jdt2bhegjmtpba92aujhuon.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCASigKW24XJEvWypkbIREOCYGvrd8l6uE"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
