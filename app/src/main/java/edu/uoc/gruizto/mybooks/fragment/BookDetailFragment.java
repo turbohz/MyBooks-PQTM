@@ -77,7 +77,7 @@ public class BookDetailFragment extends Fragment {
             builder
                     .append(book.title)
                     .append(newLine)
-                    .append(String.format("%1$te/%1$tm/%1$tY", book.publicationDate))
+                    .append(book.publicationDate)
                     .append(newLine)
                     .append(book.description)
             ;
