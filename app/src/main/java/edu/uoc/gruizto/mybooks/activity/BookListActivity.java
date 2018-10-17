@@ -20,8 +20,8 @@ import android.widget.Toast;
 import java.util.List;
 
 import edu.uoc.gruizto.mybooks.R;
+import edu.uoc.gruizto.mybooks.db.Book;
 import edu.uoc.gruizto.mybooks.fragment.BookDetailFragment;
-import edu.uoc.gruizto.mybooks.model.BookItem;
 import edu.uoc.gruizto.mybooks.model.BookRepository;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -153,12 +153,12 @@ public class BookListActivity extends AppCompatActivity {
         private static final int ODD_ROW_VIEW_TYPE = 0;
         private static final int EVEN_ROW_VIEW_TYPE = 1;
         private final BookListActivity mParentActivity;
-        private final List<BookItem> mValues;
+        private final List<Book> mValues;
         private final boolean mTwoPane;
         private final View.OnClickListener mOnClickListener = new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-            BookItem item = (BookItem) view.getTag();
+            Book item = (Book) view.getTag();
             if (mTwoPane) {
                 // create fragment state bundle
                 Bundle arguments = new Bundle();
@@ -182,7 +182,7 @@ public class BookListActivity extends AppCompatActivity {
         };
 
         SimpleItemRecyclerViewAdapter(BookListActivity parent,
-                                      List<BookItem> items,
+                                      List<Book> items,
                                       boolean twoPane) {
             mValues = items;
             mParentActivity = parent;
@@ -220,7 +220,7 @@ public class BookListActivity extends AppCompatActivity {
         public void onBindViewHolder(final BookListActivity.SimpleItemRecyclerViewAdapter.ViewHolder holder, int position) {
             holder.titleView.setText(mValues.get(position).title);
             holder.authorView.setText(mValues.get(position).author);
-            // store BookItem instance as a TAG
+            // store Book instance as a TAG
             holder.itemView.setTag(mValues.get(position));
             holder.itemView.setOnClickListener(mOnClickListener);
         }

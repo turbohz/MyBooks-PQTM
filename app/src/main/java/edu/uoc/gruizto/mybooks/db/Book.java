@@ -1,9 +1,9 @@
-package edu.uoc.gruizto.mybooks.model;
+package edu.uoc.gruizto.mybooks.db;
 
 import java.util.Date;
 
 
-public class BookItem {
+public class Book {
 
     private static final String DEFAULT_COVER_URL = "https://i.pinimg.com/564x/27/7a/0f/277a0f2733bc01ec7710a51faca1de31.jpg";
 
@@ -14,7 +14,7 @@ public class BookItem {
     public String description;
     public String coverUrl;
 
-    public BookItem() {
+    public Book() {
         this.id = "0";
         this.title = "Default title";
         this.author = "Default author";
@@ -25,6 +25,6 @@ public class BookItem {
 
     @Override
     public String toString() {
-        return String.format("BookItem:%s:%s", this.id, this.title);
+        return String.format("Book:%s:%s", this.id, this.title);
     }
 }

@@ -4,14 +4,13 @@ import android.app.Activity;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import edu.uoc.gruizto.mybooks.R;
-import edu.uoc.gruizto.mybooks.model.BookItem;
+import edu.uoc.gruizto.mybooks.db.Book;
 import edu.uoc.gruizto.mybooks.model.BookRepository;
 import edu.uoc.gruizto.mybooks.activity.BookDetailActivity;
 import edu.uoc.gruizto.mybooks.activity.BookListActivity;
@@ -33,7 +32,7 @@ public class BookDetailFragment extends Fragment {
     /**
      * The content this fragment is presenting.
      */
-    private BookItem book;
+    private Book book;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the

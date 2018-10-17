@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import edu.uoc.gruizto.mybooks.R;
+import edu.uoc.gruizto.mybooks.db.Book;
 
 /**
  * Generates and gives access to the book collection data
@@ -15,12 +15,12 @@ public class BookRepository {
     /**
      * A list of sample book items.
      */
-    public static final List<BookItem> BOOKS = new ArrayList<BookItem>();
+    public static final List<Book> BOOKS = new ArrayList<Book>();
 
     /**
      * A map of sample book items, by ID.
      */
-    public static final Map<String, BookItem> BOOK_MAP = new HashMap<String, BookItem>();
+    public static final Map<String, Book> BOOK_MAP = new HashMap<String, Book>();
 
     private static final int COUNT = 25;
 
@@ -30,13 +30,13 @@ public class BookRepository {
         }
     }
 
-    private static void addBook(BookItem book) {
+    private static void addBook(Book book) {
         BOOKS.add(book);
         BOOK_MAP.put(book.id, book);
     }
 
-    private static BookItem createDummyBook(int position) {
-        BookItem book = new BookItem();
+    private static Book createDummyBook(int position) {
+        Book book = new Book();
         book.id = String.valueOf(position);
         book.title = "Title for Book #" + position;
         book.description = "Description for Book #"+ position;
