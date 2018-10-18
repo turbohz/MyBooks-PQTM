@@ -1,6 +1,7 @@
 package edu.uoc.gruizto.mybooks.fragment;
 
 import android.app.Activity;
+import android.arch.lifecycle.ViewModelProviders;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -11,7 +12,7 @@ import android.widget.TextView;
 
 import edu.uoc.gruizto.mybooks.R;
 import edu.uoc.gruizto.mybooks.db.Book;
-import edu.uoc.gruizto.mybooks.model.BookRepository;
+import edu.uoc.gruizto.mybooks.model.AppViewModel;
 import edu.uoc.gruizto.mybooks.activity.BookDetailActivity;
 import edu.uoc.gruizto.mybooks.activity.BookListActivity;
 
@@ -46,11 +47,9 @@ public class BookDetailFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         if (getArguments().containsKey(ARG_ITEM_ID)) {
-            // Load the dummy content specified by the fragment
-            // arguments. In a real-world scenario, use a Loader
-            // to load content from a content provider.
             String bookId = getArguments().getString(ARG_ITEM_ID);
-            book = BookRepository.BOOK_MAP.get(bookId);
+            AppViewModel model = ViewModelProviders.of(this).get(AppViewModel.class);
+            book = model.findBookById(bookId);
 
             Activity activity = this.getActivity();
             CollapsingToolbarLayout appBarLayout = (CollapsingToolbarLayout) activity.findViewById(R.id.toolbar_layout);

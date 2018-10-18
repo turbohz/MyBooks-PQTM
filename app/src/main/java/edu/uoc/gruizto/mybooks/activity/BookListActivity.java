@@ -92,7 +92,7 @@ public class BookListActivity extends AppCompatActivity {
         recyclerView.setAdapter(
             new BookListActivity.SimpleItemRecyclerViewAdapter(
                 this,
-                BookRepository.BOOKS,
+                model.getAllBooks(),
                 mTwoPane
             )
         );
