@@ -1,5 +1,6 @@
 package edu.uoc.gruizto.mybooks.activity;
 
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -18,11 +19,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.List;
+import java.util.ListIterator;
 
 import edu.uoc.gruizto.mybooks.R;
 import edu.uoc.gruizto.mybooks.db.Book;
 import edu.uoc.gruizto.mybooks.fragment.BookDetailFragment;
-import edu.uoc.gruizto.mybooks.model.BookRepository;
+import edu.uoc.gruizto.mybooks.model.AppViewModel;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -32,6 +34,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.ValueEventListener;
 
 public class BookListActivity extends AppCompatActivity {
@@ -79,6 +82,8 @@ public class BookListActivity extends AppCompatActivity {
             mTwoPane = true;
         }
 
+        final AppViewModel model = ViewModelProviders.of(this).get(AppViewModel.class);
+
         // Recycler Views are an evolution of List Views
         // https://developer.android.com/guide/topics/ui/layout/recyclerview
 
@@ -104,9 +109,22 @@ public class BookListActivity extends AppCompatActivity {
             .addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    DataSnapshot books = dataSnapshot.child("books");
-                    for (DataSnapshot book : books.getChildren()) {
-                        Log.i(BookListActivity.TAG, book.getValue(Object.class).toString());
+                    List<Book> books = dataSnapshot.child("books").getValue(new GenericTypeIndicator<List<Book>>() {});
+                    ListIterator<Book> i = books.listIterator();
+                    Book book;
+                    //The iterator.nextIndex() will return the index for you.
+                    while(i.hasNext()){
+                        String id = String.valueOf(i.nextIndex());
+                        book = i.next();
+                        book.id = id;
+                        if (null == model.findBookById(book.id)) {
+                            // perhaps we should overwrite existing books,
+                            // if we consider the remote data as our truth
+                            Log.i(BookListActivity.TAG, "Inserting "+book.title);
+                            model.insert(book);
+                        } else {
+                            Log.i(BookListActivity.TAG, "Book already exist "+book.title);
+                        }
                     }
                 }
 
@@ -122,11 +140,7 @@ public class BookListActivity extends AppCompatActivity {
                 @Override
                 public void onComplete(@NonNull Task<AuthResult> task) {
                     if (task.isSuccessful()) {
-                        // Sign in success, update UI with the signed-in user's information
                         Log.d(BookListActivity.TAG, "signInWithEmail:success");
-                        Toast.makeText(activity, "Authentication succeeded.", Toast.LENGTH_SHORT).show();
-                        FirebaseUser user = task.getResult().getUser();
-
                     } else {
                         // If sign in fails, display a message to the user.
                         Log.w(BookListActivity.TAG, "signInWithEmail:failure", task.getException());
