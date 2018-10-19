@@ -16,4 +16,7 @@ public interface BookDao {
 
     @Insert
     void insert(Book book);
+
+    @Query("DELETE FROM mybooks")
+    void deleteAll();
 }

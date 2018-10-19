@@ -29,4 +29,6 @@ public class AppViewModel extends AndroidViewModel {
     public Book findBookById(String id) {
         return mBookRepository.findById(id);
     }
+
+    public void deleteAllBooks() { mBookRepository.deleteAll(); }
 }
