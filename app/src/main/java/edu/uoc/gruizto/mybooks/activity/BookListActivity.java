@@ -83,6 +83,8 @@ public class BookListActivity extends AppCompatActivity {
         }
 
         final AppViewModel model = ViewModelProviders.of(this).get(AppViewModel.class);
+        // TODO: Remove when we're sure updating local db is working fine
+        model.deleteAllBooks();
 
         // Recycler Views are an evolution of List Views
         // https://developer.android.com/guide/topics/ui/layout/recyclerview
