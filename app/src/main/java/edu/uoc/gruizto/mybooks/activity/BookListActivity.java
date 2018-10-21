@@ -36,6 +36,9 @@ public class BookListActivity extends AppCompatActivity {
      */
     private boolean mTwoPane;
     private CompositeDisposable mDisposable;
+    private AppViewModel mViewModel;
+    private SimpleItemRecyclerViewAdapter mAdapter;
+    private RecyclerView mRecyclerView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,26 +69,26 @@ public class BookListActivity extends AppCompatActivity {
             mTwoPane = true;
         }
 
-        final AppViewModel model = ViewModelProviders.of(this).get(AppViewModel.class);
+        mViewModel = ViewModelProviders.of(this).get(AppViewModel.class);
 
         // build recycler view with cached data
 
-        final RecyclerView recyclerView = findViewById(R.id.book_list);
-        assert recyclerView != null;
+        mRecyclerView = findViewById(R.id.book_list);
+        assert mRecyclerView != null;
 
-        final BookListActivity.SimpleItemRecyclerViewAdapter adapter = new BookListActivity.SimpleItemRecyclerViewAdapter(
+        mAdapter = new SimpleItemRecyclerViewAdapter(
                 this,
-                model.getBooks(),
+                mViewModel.getBooks(),
                 mTwoPane
             );
 
-        recyclerView.setAdapter(adapter);
+        mRecyclerView.setAdapter(mAdapter);
 
         // use Rx Single to get book data asynchronously
 
         mDisposable = new CompositeDisposable();
 
-        model.refresh()
+        mViewModel.refresh()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(new SingleObserver<List<Book>>() {
@@ -97,12 +100,12 @@ public class BookListActivity extends AppCompatActivity {
 
                 @Override
                 public void onSuccess(List<Book> books) {
-                    adapter.setItems(books);
+                    mAdapter.setItems(books);
                 }
 
                 @Override
                 public void onError(Throwable e) {
-                    Snackbar.make(recyclerView, e.getMessage(), Snackbar.LENGTH_LONG).show();
+                    Snackbar.make(mRecyclerView, e.getMessage(), Snackbar.LENGTH_LONG).show();
                 }});
     }
 
