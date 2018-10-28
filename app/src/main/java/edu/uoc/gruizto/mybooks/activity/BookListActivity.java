@@ -21,6 +21,11 @@ import edu.uoc.gruizto.mybooks.R;
 import edu.uoc.gruizto.mybooks.db.Book;
 import edu.uoc.gruizto.mybooks.fragment.BookDetailFragment;
 import edu.uoc.gruizto.mybooks.model.AppViewModel;
+import io.reactivex.SingleObserver;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 
 public class BookListActivity extends AppCompatActivity {
 
@@ -30,6 +35,7 @@ public class BookListActivity extends AppCompatActivity {
      * device.
      */
     private boolean mTwoPane;
+    private CompositeDisposable mDisposable;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,15 +68,51 @@ public class BookListActivity extends AppCompatActivity {
 
         final AppViewModel model = ViewModelProviders.of(this).get(AppViewModel.class);
 
-        RecyclerView recyclerView = findViewById(R.id.book_list);
+        // build recycler view with cached data
+
+        final RecyclerView recyclerView = findViewById(R.id.book_list);
         assert recyclerView != null;
-        recyclerView.setAdapter(
-            new BookListActivity.SimpleItemRecyclerViewAdapter(
+
+        final BookListActivity.SimpleItemRecyclerViewAdapter adapter = new BookListActivity.SimpleItemRecyclerViewAdapter(
                 this,
                 model.getBooks(),
                 mTwoPane
-            )
-        );
+            );
+
+        recyclerView.setAdapter(adapter);
+
+        // use Rx Single to get book data asynchronously
+
+        mDisposable = new CompositeDisposable();
+
+        model.refresh()
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(new SingleObserver<List<Book>>() {
+                @Override
+                public void onSubscribe(Disposable d) {
+                    // add to disposables, dispose onDestroy activity
+                    mDisposable.add(d);
+                }
+
+                @Override
+                public void onSuccess(List<Book> books) {
+                    adapter.setItems(books);
+                }
+
+                @Override
+                public void onError(Throwable e) {
+                    Snackbar.make(recyclerView, e.getMessage(), Snackbar.LENGTH_LONG).show();
+                }});
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        if(null != mDisposable && !mDisposable.isDisposed()) {
+            mDisposable.dispose();
+        }
     }
 
     public static class SimpleItemRecyclerViewAdapter

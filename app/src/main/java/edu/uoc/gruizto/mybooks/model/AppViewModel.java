@@ -57,7 +57,6 @@ public class AppViewModel extends AndroidViewModel {
     }
 
     public void deleteAllBooks() { mBookRepository.deleteAll(); }
-}
 
     /**
      * Try to sign in to Firebase with an email and password.
