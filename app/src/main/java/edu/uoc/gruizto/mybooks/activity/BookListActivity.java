@@ -121,7 +121,7 @@ public class BookListActivity extends AppCompatActivity {
                             // perhaps we should overwrite existing books,
                             // if we consider the remote data as our truth
                             Log.i(BookListActivity.TAG, "Inserting "+book.title);
-                            model.insert(book);
+                            model.insertBook(book);
                         } else {
                             Log.i(BookListActivity.TAG, "Book already exist "+book.title);
                         }

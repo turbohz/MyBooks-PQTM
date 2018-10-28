@@ -10,23 +10,23 @@ import edu.uoc.gruizto.mybooks.db.BookRepository;
 
 public class AppViewModel extends AndroidViewModel {
 
-    private BookRepository mRepository;
+    private BookRepository mBookRepository;
     private List<Book> mAllBooks;
 
     public AppViewModel (Application application) {
         super(application);
-        mRepository = new BookRepository(application);
+        mBookRepository = new BookRepository(application);
     }
 
-    public List<Book> getBooks() { return mRepository.getAllBooks(); }
+    public List<Book> getBooks() { return mBookRepository.getAll(); }
 
     public boolean exists(Book book) {
         return (null != findBookById(book.id));
     }
+    public void insertBook(Book book) { mBookRepository.insert(book); }
 
-    public void insert(Book book) { mRepository.insert(book); }
 
     public Book findBookById(String id) {
-        return mRepository.findBookById(id);
+        return mBookRepository.findById(id);
     }
 }

@@ -9,10 +9,10 @@ import java.util.List;
 @Dao
 public interface BookDao {
     @Query("SELECT * FROM mybooks ORDER BY id ASC")
-    List<Book> getAllBooks();
+    List<Book> getAll();
 
     @Query("SELECT * FROM mybooks WHERE id=:id LIMIT 1")
-    Book findBookById(String id);
+    Book findById(String id);
 
     @Insert
     void insert(Book book);

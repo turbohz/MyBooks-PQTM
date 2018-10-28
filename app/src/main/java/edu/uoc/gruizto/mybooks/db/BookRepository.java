@@ -13,12 +13,12 @@ public class BookRepository {
         mBookDao = db.bookDao();
     }
 
-    public List<Book> getAllBooks() { return mBookDao.getAllBooks(); }
+    public List<Book> getAll() { return mBookDao.getAll(); }
 
     public void insert(Book book) { mBookDao.insert(book); }
 
-    public Book findBookById(String id) {
-        return mBookDao.findBookById(id);
+    public Book findById(String id) {
+        return mBookDao.findById(id);
     }
 }
 
