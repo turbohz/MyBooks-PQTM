@@ -5,37 +5,22 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.LayoutRes;
-import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.List;
-import java.util.ListIterator;
 
 import edu.uoc.gruizto.mybooks.R;
 import edu.uoc.gruizto.mybooks.db.Book;
 import edu.uoc.gruizto.mybooks.fragment.BookDetailFragment;
 import edu.uoc.gruizto.mybooks.model.AppViewModel;
-
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthResult;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.GenericTypeIndicator;
-import com.google.firebase.database.ValueEventListener;
 
 public class BookListActivity extends AppCompatActivity {
 
@@ -45,13 +30,6 @@ public class BookListActivity extends AppCompatActivity {
      * device.
      */
     private boolean mTwoPane;
-
-    private FirebaseAuth mAuth;
-    private FirebaseDatabase mDB;
-
-    // FIXME: this should not be hardcoded, and secrets should not be stored in the app
-    private static final String USER_EMAIL = "gruizto@uoc.edu";
-    private static final String USER_PASSWORD = "QhW6Yk97sjvNr";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,73 +61,16 @@ public class BookListActivity extends AppCompatActivity {
         }
 
         final AppViewModel model = ViewModelProviders.of(this).get(AppViewModel.class);
-        // TODO: Remove when we're sure updating local db is working fine
-        model.deleteAllBooks();
-
-        // Recycler Views are an evolution of List Views
-        // https://developer.android.com/guide/topics/ui/layout/recyclerview
 
         RecyclerView recyclerView = findViewById(R.id.book_list);
         assert recyclerView != null;
         recyclerView.setAdapter(
             new BookListActivity.SimpleItemRecyclerViewAdapter(
                 this,
-                model.getAllBooks(),
+                model.getBooks(),
                 mTwoPane
             )
         );
-
-        // Connect to Firebase database
-
-        final BookListActivity activity = this;
-
-        mAuth = FirebaseAuth.getInstance();
-        mDB = FirebaseDatabase.getInstance();
-
-        mDB
-            .getReference()
-            .addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    List<Book> books = dataSnapshot.child("books").getValue(new GenericTypeIndicator<List<Book>>() {});
-                    ListIterator<Book> i = books.listIterator();
-                    Book book;
-                    //The iterator.nextIndex() will return the index for you.
-                    while(i.hasNext()){
-                        String id = String.valueOf(i.nextIndex());
-                        book = i.next();
-                        book.id = id;
-                        if (null == model.findBookById(book.id)) {
-                            // perhaps we should overwrite existing books,
-                            // if we consider the remote data as our truth
-                            Log.i(BookListActivity.TAG, "Inserting "+book.title);
-                            model.insertBook(book);
-                        } else {
-                            Log.i(BookListActivity.TAG, "Book already exist "+book.title);
-                        }
-                    }
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-                    Log.e(BookListActivity.TAG, "ValueEventListener:" + databaseError);
-                }
-            });
-
-        mAuth
-            .signInWithEmailAndPassword(USER_EMAIL, USER_PASSWORD)
-            .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                @Override
-                public void onComplete(@NonNull Task<AuthResult> task) {
-                    if (task.isSuccessful()) {
-                        Log.d(BookListActivity.TAG, "signInWithEmail:success");
-                    } else {
-                        // If sign in fails, display a message to the user.
-                        Log.w(BookListActivity.TAG, "signInWithEmail:failure", task.getException());
-                        Toast.makeText(activity, "Authentication failed.", Toast.LENGTH_SHORT).show();
-                    }
-                }
-            });
     }
 
     public static class SimpleItemRecyclerViewAdapter
@@ -244,6 +165,12 @@ public class BookListActivity extends AppCompatActivity {
         @Override
         public int getItemCount() {
             return mValues.size();
+        }
+
+        public void setItems(List<Book> items) {
+            mValues.clear();
+            mValues.addAll(items);
+            notifyDataSetChanged();
         }
     }
 }
