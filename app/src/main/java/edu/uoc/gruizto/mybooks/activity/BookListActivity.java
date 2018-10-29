@@ -84,10 +84,19 @@ public class BookListActivity extends AppCompatActivity {
 
         mRecyclerView.setAdapter(mAdapter);
 
-        // use Rx Single to get book data asynchronously
+
+        // Disposable is needed to clean up the Rx entities
+        // used in the asynchronous refresh of the view model
 
         mDisposable = new CompositeDisposable();
 
+        refreshModel();
+    }
+
+    /**
+     * use Rx Single to get book data asynchronously
+     */
+    private void refreshModel() {
         mViewModel.refresh()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
