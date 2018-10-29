@@ -10,10 +10,13 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.List;
 
@@ -36,6 +39,7 @@ public class BookListActivity extends AppCompatActivity {
      */
     private boolean mTwoPane;
     private CompositeDisposable mDisposable;
+    private SwipeRefreshLayout mRefresh;
     private AppViewModel mViewModel;
     private SimpleItemRecyclerViewAdapter mAdapter;
     private RecyclerView mRecyclerView;
@@ -84,6 +88,18 @@ public class BookListActivity extends AppCompatActivity {
 
         mRecyclerView.setAdapter(mAdapter);
 
+        // Configure slide to refresh
+
+        mRefresh = findViewById(R.id.book_list_refresh);
+
+        mRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                mAdapter.clear();
+                refreshModel();
+            }
+        })
+
 
         // Disposable is needed to clean up the Rx entities
         // used in the asynchronous refresh of the view model
@@ -109,11 +125,13 @@ public class BookListActivity extends AppCompatActivity {
 
                 @Override
                 public void onSuccess(List<Book> books) {
+                    mRefresh.setRefreshing(false);
                     mAdapter.setItems(books);
                 }
 
                 @Override
                 public void onError(Throwable e) {
+                    mRefresh.setRefreshing(false);
                     Snackbar.make(mRecyclerView, e.getMessage(), Snackbar.LENGTH_LONG).show();
                 }});
     }
@@ -219,6 +237,11 @@ public class BookListActivity extends AppCompatActivity {
         @Override
         public int getItemCount() {
             return mValues.size();
+        }
+
+        public void clear() {
+            mValues.clear();
+            notifyDataSetChanged();
         }
 
         public void setItems(List<Book> items) {
