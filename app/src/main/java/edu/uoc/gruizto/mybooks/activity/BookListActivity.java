@@ -56,15 +56,6 @@ public class BookListActivity extends AppCompatActivity {
 
         // Set up (floating) Action Button
 
-        FloatingActionButton fab = findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-            // snackbar is similar to a toast, but can have behavior
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                    .setAction("Action", null).show();
-            }
-        });
 
         // If we find a detail view, we're in two pane mode
         // (it is only used in the large-screen layouts (res/values-w900dp) layout
@@ -91,6 +82,8 @@ public class BookListActivity extends AppCompatActivity {
         // Configure slide to refresh
 
         mRefresh = findViewById(R.id.book_list_refresh);
+        
+
 
         mRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -98,8 +91,21 @@ public class BookListActivity extends AppCompatActivity {
                 mAdapter.clear();
                 refreshModel();
             }
-        })
+        });
 
+        // Set up (floating) Action Button to reset app state
+        // FIXME: Get rid of this before deploy
+
+	    FloatingActionButton fab = findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Snackbar.make(view, "App state reset", Snackbar.LENGTH_LONG);
+                FirebaseAuth.getInstance().signOut();
+                mViewModel.deleteAllBooks();
+                mAdapter.clear();
+            }
+        });
 
         // Disposable is needed to clean up the Rx entities
         // used in the asynchronous refresh of the view model
