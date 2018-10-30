@@ -51,12 +51,9 @@ public class AppViewModel extends AndroidViewModel {
         return (null != findBookById(book.id));
     }
     public void insertBook(Book book) { mBookRepository.insert(book); }
-
-
     public Book findBookById(String id) {
         return mBookRepository.findById(id);
     }
-
     public void deleteAllBooks() { mBookRepository.deleteAll(); }
 
     /**
@@ -137,11 +134,11 @@ public class AppViewModel extends AndroidViewModel {
                                 String id = String.valueOf(i.nextIndex());
                                 book = i.next();
                                 book.id = id;
-                                if (null == findBookById(book.id)) {
+                                if (exists(book)) {
+                                    Log.i(AppViewModel.TAG, "Book already exist " + book.title);
+                                } else {
                                     Log.i(AppViewModel.TAG, "Inserting " + book.title);
                                     insertBook(book);
-                                } else {
-                                    Log.i(AppViewModel.TAG, "Book already exist " + book.title);
                                 }
                             }
 
