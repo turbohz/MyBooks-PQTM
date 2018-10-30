@@ -5,10 +5,14 @@ import android.arch.lifecycle.ViewModelProviders;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.squareup.picasso.Picasso;
 
 import edu.uoc.gruizto.mybooks.R;
 import edu.uoc.gruizto.mybooks.db.Book;
@@ -53,10 +57,6 @@ public class BookDetailFragment extends Fragment {
 
             Activity activity = this.getActivity();
             CollapsingToolbarLayout appBarLayout = (CollapsingToolbarLayout) activity.findViewById(R.id.toolbar_layout);
-
-            if (appBarLayout != null) {
-                appBarLayout.setTitle(book.title);
-            }
         }
     }
 
@@ -72,16 +72,34 @@ public class BookDetailFragment extends Fragment {
         if (book != null) {
 
             StringBuilder builder = new StringBuilder();
-            String newLine = "\n";
+            String lineBreak = "<br/>";
             builder
-                    .append(book.title)
-                    .append(newLine)
+                    .append("<strong>" + book.title + "</strong>")
+                    .append(lineBreak)
                     .append(book.publicationDate)
-                    .append(newLine)
-                    .append(book.description)
+                    .append("<p>" + book.description + "</p>")
             ;
 
-            ((TextView) rootView.findViewById(R.id.item_detail)).setText(builder.toString());
+            ((TextView) rootView.findViewById(R.id.item_detail)).setText(Html.fromHtml(builder.toString()));
+
+            // Update picture
+
+            ImageView cover = rootView.findViewById(R.id.book_cover);
+            Picasso.get().load(book.coverUrl).into(cover);
+
+            // Update view title
+
+            Activity activity = this.getActivity();
+            CollapsingToolbarLayout appBarLayout = (CollapsingToolbarLayout) activity.findViewById(R.id.toolbar_layout);
+            if (appBarLayout != null) {
+                appBarLayout.setTitle(book.title);
+            }
+        } else {
+
+            // hide default image
+
+            ImageView cover = rootView.findViewById(R.id.book_cover);
+            cover.setVisibility(View.GONE);
         }
 
         return rootView;
