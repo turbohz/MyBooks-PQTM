@@ -26,7 +26,7 @@
             android:layout_margin="@dimen/text_margin"
             android:gravity="start"
             android:textAppearance="?attr/textAppearanceListItem"
-            android:textColor="?android:attr/textColorPrimary"
+            android:textColor="@color/textColorPrimary"
             tools:text="@tools:sample/lorem" />
 
         <TextView
@@ -38,7 +38,7 @@
             android:layout_marginBottom="@dimen/text_margin"
             android:gravity="end"
             android:textAppearance="?attr/textAppearanceListItem"
-            android:textColor="?android:attr/textColorSecondary"
+            android:textColor="@color/textColorSecondary"
             android:textSize="14sp"
             tools:text="@tools:sample/lorem" />
     </LinearLayout>

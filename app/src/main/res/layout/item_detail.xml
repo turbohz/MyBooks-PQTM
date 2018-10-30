@@ -37,6 +37,7 @@
         android:ems="10"
         android:lineSpacingExtra="2sp"
         android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+        android:textColor="@color/textColorSecondary"
         android:textSize="14sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@+id/guideline"
