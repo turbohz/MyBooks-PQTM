@@ -1,38 +1,31 @@
 package edu.uoc.gruizto.mybooks.activity;
 
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.LayoutRes;
-import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.List;
 
 import edu.uoc.gruizto.mybooks.R;
+import edu.uoc.gruizto.mybooks.db.Book;
 import edu.uoc.gruizto.mybooks.fragment.BookDetailFragment;
-import edu.uoc.gruizto.mybooks.model.BookItem;
-import edu.uoc.gruizto.mybooks.model.BookRepository;
-
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthResult;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
+import edu.uoc.gruizto.mybooks.model.AppViewModel;
+import io.reactivex.SingleObserver;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 
 public class BookListActivity extends AppCompatActivity {
 
@@ -42,13 +35,7 @@ public class BookListActivity extends AppCompatActivity {
      * device.
      */
     private boolean mTwoPane;
-
-    private FirebaseAuth mAuth;
-    private FirebaseDatabase mDB;
-
-    // FIXME: this should not be hardcoded, and secrets should not be stored in the app
-    private static final String USER_EMAIL = "gruizto@uoc.edu";
-    private static final String USER_PASSWORD = "QhW6Yk97sjvNr";
+    private CompositeDisposable mDisposable;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,61 +66,53 @@ public class BookListActivity extends AppCompatActivity {
             mTwoPane = true;
         }
 
-        // Recycler Views are an evolution of List Views
-        // https://developer.android.com/guide/topics/ui/layout/recyclerview
+        final AppViewModel model = ViewModelProviders.of(this).get(AppViewModel.class);
 
-        RecyclerView recyclerView = findViewById(R.id.book_list);
+        // build recycler view with cached data
+
+        final RecyclerView recyclerView = findViewById(R.id.book_list);
         assert recyclerView != null;
-        recyclerView.setAdapter(
-            new BookListActivity.SimpleItemRecyclerViewAdapter(
+
+        final BookListActivity.SimpleItemRecyclerViewAdapter adapter = new BookListActivity.SimpleItemRecyclerViewAdapter(
                 this,
-                BookRepository.BOOKS,
+                model.getBooks(),
                 mTwoPane
-            )
-        );
+            );
 
-        // Connect to Firebase database
+        recyclerView.setAdapter(adapter);
 
-        final BookListActivity activity = this;
+        // use Rx Single to get book data asynchronously
 
-        mAuth = FirebaseAuth.getInstance();
-        mDB = FirebaseDatabase.getInstance();
+        mDisposable = new CompositeDisposable();
 
-        mDB
-            .getReference()
-            .addValueEventListener(new ValueEventListener() {
+        model.refresh()
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(new SingleObserver<List<Book>>() {
                 @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    DataSnapshot books = dataSnapshot.child("books");
-                    for (DataSnapshot book : books.getChildren()) {
-                        Log.i(BookListActivity.TAG, book.getValue(Object.class).toString());
-                    }
+                public void onSubscribe(Disposable d) {
+                    // add to disposables, dispose onDestroy activity
+                    mDisposable.add(d);
                 }
 
                 @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-                    Log.e(BookListActivity.TAG, "ValueEventListener:" + databaseError);
+                public void onSuccess(List<Book> books) {
+                    adapter.setItems(books);
                 }
-            });
 
-        mAuth
-            .signInWithEmailAndPassword(USER_EMAIL, USER_PASSWORD)
-            .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                 @Override
-                public void onComplete(@NonNull Task<AuthResult> task) {
-                    if (task.isSuccessful()) {
-                        // Sign in success, update UI with the signed-in user's information
-                        Log.d(BookListActivity.TAG, "signInWithEmail:success");
-                        Toast.makeText(activity, "Authentication succeeded.", Toast.LENGTH_SHORT).show();
-                        FirebaseUser user = task.getResult().getUser();
+                public void onError(Throwable e) {
+                    Snackbar.make(recyclerView, e.getMessage(), Snackbar.LENGTH_LONG).show();
+                }});
+    }
 
-                    } else {
-                        // If sign in fails, display a message to the user.
-                        Log.w(BookListActivity.TAG, "signInWithEmail:failure", task.getException());
-                        Toast.makeText(activity, "Authentication failed.", Toast.LENGTH_SHORT).show();
-                    }
-                }
-            });
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        if(null != mDisposable && !mDisposable.isDisposed()) {
+            mDisposable.dispose();
+        }
     }
 
     public static class SimpleItemRecyclerViewAdapter
@@ -153,12 +132,12 @@ public class BookListActivity extends AppCompatActivity {
         private static final int ODD_ROW_VIEW_TYPE = 0;
         private static final int EVEN_ROW_VIEW_TYPE = 1;
         private final BookListActivity mParentActivity;
-        private final List<BookItem> mValues;
+        private final List<Book> mValues;
         private final boolean mTwoPane;
         private final View.OnClickListener mOnClickListener = new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-            BookItem item = (BookItem) view.getTag();
+            Book item = (Book) view.getTag();
             if (mTwoPane) {
                 // create fragment state bundle
                 Bundle arguments = new Bundle();
@@ -182,7 +161,7 @@ public class BookListActivity extends AppCompatActivity {
         };
 
         SimpleItemRecyclerViewAdapter(BookListActivity parent,
-                                      List<BookItem> items,
+                                      List<Book> items,
                                       boolean twoPane) {
             mValues = items;
             mParentActivity = parent;
@@ -220,7 +199,7 @@ public class BookListActivity extends AppCompatActivity {
         public void onBindViewHolder(final BookListActivity.SimpleItemRecyclerViewAdapter.ViewHolder holder, int position) {
             holder.titleView.setText(mValues.get(position).title);
             holder.authorView.setText(mValues.get(position).author);
-            // store BookItem instance as a TAG
+            // store Book instance as a TAG
             holder.itemView.setTag(mValues.get(position));
             holder.itemView.setOnClickListener(mOnClickListener);
         }
@@ -228,6 +207,12 @@ public class BookListActivity extends AppCompatActivity {
         @Override
         public int getItemCount() {
             return mValues.size();
+        }
+
+        public void setItems(List<Book> items) {
+            mValues.clear();
+            mValues.addAll(items);
+            notifyDataSetChanged();
         }
     }
 }
