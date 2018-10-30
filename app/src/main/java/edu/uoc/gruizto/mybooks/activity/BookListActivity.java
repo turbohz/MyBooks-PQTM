@@ -10,10 +10,13 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.List;
 
@@ -36,6 +39,10 @@ public class BookListActivity extends AppCompatActivity {
      */
     private boolean mTwoPane;
     private CompositeDisposable mDisposable;
+    private SwipeRefreshLayout mRefresh;
+    private AppViewModel mViewModel;
+    private SimpleItemRecyclerViewAdapter mAdapter;
+    private RecyclerView mRecyclerView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,15 +56,6 @@ public class BookListActivity extends AppCompatActivity {
 
         // Set up (floating) Action Button
 
-        FloatingActionButton fab = findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-            // snackbar is similar to a toast, but can have behavior
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                    .setAction("Action", null).show();
-            }
-        });
 
         // If we find a detail view, we're in two pane mode
         // (it is only used in the large-screen layouts (res/values-w900dp) layout
@@ -66,26 +64,62 @@ public class BookListActivity extends AppCompatActivity {
             mTwoPane = true;
         }
 
-        final AppViewModel model = ViewModelProviders.of(this).get(AppViewModel.class);
+        mViewModel = ViewModelProviders.of(this).get(AppViewModel.class);
 
         // build recycler view with cached data
 
-        final RecyclerView recyclerView = findViewById(R.id.book_list);
-        assert recyclerView != null;
+        mRecyclerView = findViewById(R.id.book_list);
+        assert mRecyclerView != null;
 
-        final BookListActivity.SimpleItemRecyclerViewAdapter adapter = new BookListActivity.SimpleItemRecyclerViewAdapter(
+        mAdapter = new SimpleItemRecyclerViewAdapter(
                 this,
-                model.getBooks(),
+                mViewModel.getBooks(),
                 mTwoPane
             );
 
-        recyclerView.setAdapter(adapter);
+        mRecyclerView.setAdapter(mAdapter);
 
-        // use Rx Single to get book data asynchronously
+        // Configure slide to refresh
+
+        mRefresh = findViewById(R.id.book_list_refresh);
+        
+
+
+        mRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                mAdapter.clear();
+                refreshModel();
+            }
+        });
+
+        // Set up (floating) Action Button to reset app state
+        // FIXME: Get rid of this before deploy
+
+	    FloatingActionButton fab = findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Snackbar.make(view, "App state reset", Snackbar.LENGTH_LONG);
+                FirebaseAuth.getInstance().signOut();
+                mViewModel.deleteAllBooks();
+                mAdapter.clear();
+            }
+        });
+
+        // Disposable is needed to clean up the Rx entities
+        // used in the asynchronous refresh of the view model
 
         mDisposable = new CompositeDisposable();
 
-        model.refresh()
+        refreshModel();
+    }
+
+    /**
+     * use Rx Single to get book data asynchronously
+     */
+    private void refreshModel() {
+        mViewModel.refresh()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(new SingleObserver<List<Book>>() {
@@ -97,12 +131,14 @@ public class BookListActivity extends AppCompatActivity {
 
                 @Override
                 public void onSuccess(List<Book> books) {
-                    adapter.setItems(books);
+                    mRefresh.setRefreshing(false);
+                    mAdapter.setItems(books);
                 }
 
                 @Override
                 public void onError(Throwable e) {
-                    Snackbar.make(recyclerView, e.getMessage(), Snackbar.LENGTH_LONG).show();
+                    mRefresh.setRefreshing(false);
+                    Snackbar.make(mRecyclerView, e.getMessage(), Snackbar.LENGTH_LONG).show();
                 }});
     }
 
@@ -207,6 +243,11 @@ public class BookListActivity extends AppCompatActivity {
         @Override
         public int getItemCount() {
             return mValues.size();
+        }
+
+        public void clear() {
+            mValues.clear();
+            notifyDataSetChanged();
         }
 
         public void setItems(List<Book> items) {
