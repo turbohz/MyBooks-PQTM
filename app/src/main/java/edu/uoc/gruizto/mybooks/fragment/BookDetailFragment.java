@@ -53,10 +53,6 @@ public class BookDetailFragment extends Fragment {
 
             Activity activity = this.getActivity();
             CollapsingToolbarLayout appBarLayout = (CollapsingToolbarLayout) activity.findViewById(R.id.toolbar_layout);
-
-            if (appBarLayout != null) {
-                appBarLayout.setTitle(book.title);
-            }
         }
     }
 
@@ -82,6 +78,14 @@ public class BookDetailFragment extends Fragment {
             ;
 
             ((TextView) rootView.findViewById(R.id.item_detail)).setText(builder.toString());
+        }
+
+        // Update view title
+
+        Activity activity = this.getActivity();
+        CollapsingToolbarLayout appBarLayout = (CollapsingToolbarLayout) activity.findViewById(R.id.toolbar_layout);
+        if (appBarLayout != null) {
+            appBarLayout.setTitle(book.title);
         }
 
         return rootView;
