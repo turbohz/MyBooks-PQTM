@@ -104,6 +104,17 @@ public class BookListActivity extends AppCompatActivity {
                 FirebaseAuth.getInstance().signOut();
                 mViewModel.deleteAllBooks();
                 mAdapter.clear();
+
+                // if in twoPane view, clear book details fragment
+
+                if (mTwoPane) {
+                    BookDetailFragment fragment = new BookDetailFragment();
+                    fragment.setArguments(new Bundle());
+                    getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.item_detail_container, fragment)
+                        .commit();
+                }
             }
         });
 

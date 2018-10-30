@@ -94,9 +94,13 @@ public class BookDetailFragment extends Fragment {
             if (appBarLayout != null) {
                 appBarLayout.setTitle(book.title);
             }
+        } else {
+
+            // hide default image
+
+            ImageView cover = rootView.findViewById(R.id.book_cover);
+            cover.setVisibility(View.GONE);
         }
-
-
 
         return rootView;
     }
