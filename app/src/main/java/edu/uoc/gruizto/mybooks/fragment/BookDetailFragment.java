@@ -8,8 +8,10 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.squareup.picasso.Picasso;
 import edu.uoc.gruizto.mybooks.R;
 import edu.uoc.gruizto.mybooks.db.Book;
 import edu.uoc.gruizto.mybooks.model.AppViewModel;
@@ -79,6 +81,11 @@ public class BookDetailFragment extends Fragment {
 
             ((TextView) rootView.findViewById(R.id.item_detail)).setText(builder.toString());
         }
+
+        // Update picture
+
+        ImageView cover = rootView.findViewById(R.id.book_cover);
+        Picasso.get().load(book.coverUrl).into(cover);
 
         // Update view title
 
