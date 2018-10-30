@@ -35,11 +35,13 @@
         android:layout_marginEnd="16dp"
         android:layout_marginRight="16dp"
         android:ems="10"
+        android:lineSpacingExtra="2sp"
         android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+        android:textSize="14sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@+id/guideline"
         app:layout_constraintTop_toTopOf="parent"
-        tools:text="Book Title" />
+        tools:text="@tools:sample/lorem/random" />
 
     <android.support.constraint.Guideline
         android:id="@+id/guideline"
