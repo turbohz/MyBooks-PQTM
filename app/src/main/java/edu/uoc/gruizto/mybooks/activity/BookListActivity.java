@@ -11,13 +11,17 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.firebase.auth.FirebaseAuth;
 
+import java.util.Arrays;
 import java.util.List;
 
 import edu.uoc.gruizto.mybooks.R;
@@ -33,6 +37,7 @@ import io.reactivex.schedulers.Schedulers;
 public class BookListActivity extends AppCompatActivity {
 
     private static final String TAG = BookListActivity.class.getName();
+    private static final int GOOGLE_SERVICES_UPDATE_DIALOG_REQUEST = 1;
     /**
      * Whether or not the activity is in two-pane mode, i.e. running on a tablet
      * device.
@@ -159,6 +164,34 @@ public class BookListActivity extends AppCompatActivity {
 
         if(null != mDisposable && !mDisposable.isDisposed()) {
             mDisposable.dispose();
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        GoogleApiAvailability googleApiAvailability = GoogleApiAvailability.getInstance();
+
+        List<Integer> errorCodes = Arrays.asList(
+                ConnectionResult.SERVICE_MISSING,
+                ConnectionResult.SERVICE_VERSION_UPDATE_REQUIRED,
+                ConnectionResult.SERVICE_DISABLED
+        );
+
+        int googleApiAvailabilityStatus = googleApiAvailability.isGooglePlayServicesAvailable(this);
+
+        if (errorCodes.contains(googleApiAvailabilityStatus)) {
+            Log.d(TAG, "Requesting Google Services Update");
+            googleApiAvailability.getErrorDialog(this, googleApiAvailabilityStatus, GOOGLE_SERVICES_UPDATE_DIALOG_REQUEST).show();
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        if (requestCode == GOOGLE_SERVICES_UPDATE_DIALOG_REQUEST) {
+            Log.d(TAG, "Got result:"+String.valueOf(resultCode));
         }
     }
 
