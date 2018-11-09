@@ -128,6 +128,7 @@ public class BookListActivity extends AppCompatActivity {
 
         mDisposable = new CompositeDisposable();
 
+        logFirebaseInstanceIdToken();
         refreshModel();
     }
 
@@ -182,9 +183,42 @@ public class BookListActivity extends AppCompatActivity {
         int googleApiAvailabilityStatus = googleApiAvailability.isGooglePlayServicesAvailable(this);
 
         if (errorCodes.contains(googleApiAvailabilityStatus)) {
+
             Log.d(TAG, "Requesting Google Services Update");
             googleApiAvailability.getErrorDialog(this, googleApiAvailabilityStatus, GOOGLE_SERVICES_UPDATE_DIALOG_REQUEST).show();
+
         }
+    }
+
+    /**
+     * We can use this instance id token to send messages
+     * specifically to a particular device.
+     *
+     * Useful for testing.
+     */
+    protected void logFirebaseInstanceIdToken() {
+
+        mViewModel
+            .getFirebaseInstanceId()
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(new SingleObserver<String>() {
+                @Override
+                public void onSubscribe(Disposable d) {
+                    // add to disposables, dispose onDestroy activity
+                    mDisposable.add(d);
+                }
+
+                @Override
+                public void onSuccess(String token) {
+                    Log.i(TAG, "Firebase instance id token:" + token);
+                }
+
+                @Override
+                public void onError(Throwable e) {
+                    mRefresh.setRefreshing(false);
+                    Snackbar.make(mRecyclerView, e.getMessage(), Snackbar.LENGTH_LONG).show();
+                }});
     }
 
     @Override
