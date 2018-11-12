@@ -1,11 +1,7 @@
 package edu.uoc.gruizto.mybooks.messaging;
 
 import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.Context;
-import android.content.Intent;
-import android.media.RingtoneManager;
-import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
@@ -15,6 +11,11 @@ import com.google.firebase.messaging.RemoteMessage;
 import edu.uoc.gruizto.mybooks.R;
 
 public class MessagingService extends FirebaseMessagingService {
+
+    @Override
+    public void onCreate() {
+        new ChannelBuilder(this).build();
+    }
 
     private static final String TAG = MessagingService.class.getName();
 
@@ -56,10 +57,10 @@ public class MessagingService extends FirebaseMessagingService {
 
         String channelId = getString(R.string.default_notification_channel_id);
         NotificationCompat.Builder notificationBuilder =
-                new NotificationCompat.Builder(this, channelId)
-                        .setSmallIcon(R.drawable.ic_launcher_foreground)
-                        .setContentTitle("Incoming notification")
-                        .setContentText(messageBody);
+            new NotificationCompat.Builder(this, channelId)
+                .setSmallIcon(R.drawable.ic_launcher_foreground)
+                .setContentTitle("Incoming notification")
+                .setContentText(messageBody);
 
         NotificationManager notificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
