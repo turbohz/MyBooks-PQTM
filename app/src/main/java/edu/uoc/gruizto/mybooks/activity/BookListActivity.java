@@ -235,6 +235,31 @@ public class BookListActivity extends AppCompatActivity {
         }
     }
 
+    private void showBook(String id) {
+
+        Log.i(TAG, "Showing book "+id);
+
+        if (mTwoPane) {
+            // create fragment state bundle
+            Bundle arguments = new Bundle();
+            arguments.putString(BookDetailFragment.ARG_ITEM_ID, id);
+            // create the detail fragment, and provide it with the Bundle
+            BookDetailFragment fragment = new BookDetailFragment();
+            fragment.setArguments(arguments);
+            // add it to the activity back stack, using a fragment transaction
+            this.getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.item_detail_container, fragment)
+                    .commit();
+        } else {
+
+            Intent intent = new Intent(this, BookDetailActivity.class);
+            intent.setAction(Intent.ACTION_VIEW);
+            intent.putExtra(BookDetailFragment.ARG_ITEM_ID, id);
+            this.startActivity(intent);
+        }
+    }
+
     public static class SimpleItemRecyclerViewAdapter
             extends RecyclerView.Adapter<BookListActivity.SimpleItemRecyclerViewAdapter.ViewHolder> {
 
@@ -257,26 +282,8 @@ public class BookListActivity extends AppCompatActivity {
         private final View.OnClickListener mOnClickListener = new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-            Book item = (Book) view.getTag();
-            if (mTwoPane) {
-                // create fragment state bundle
-                Bundle arguments = new Bundle();
-                arguments.putString(BookDetailFragment.ARG_ITEM_ID, item.id);
-                // create the detail fragment, and provide it with the Bundle
-                BookDetailFragment fragment = new BookDetailFragment();
-                fragment.setArguments(arguments);
-                // add it to the activity back stack, using a fragment transaction
-                mParentActivity.getSupportFragmentManager()
-                        .beginTransaction()
-                        .replace(R.id.item_detail_container, fragment)
-                        .commit();
-            } else {
-                Context context = view.getContext();
-                Intent intent = new Intent(context, BookDetailActivity.class);
-                intent.putExtra(BookDetailFragment.ARG_ITEM_ID, item.id);
-
-                context.startActivity(intent);
-            }
+                Book item = (Book) view.getTag();
+                mParentActivity.showBook(item.id);
             }
         };
 
