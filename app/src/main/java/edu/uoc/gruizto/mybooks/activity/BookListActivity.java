@@ -27,6 +27,7 @@ import java.util.List;
 import edu.uoc.gruizto.mybooks.R;
 import edu.uoc.gruizto.mybooks.db.Book;
 import edu.uoc.gruizto.mybooks.fragment.BookDetailFragment;
+import edu.uoc.gruizto.mybooks.messaging.ChannelBuilder;
 import edu.uoc.gruizto.mybooks.model.AppViewModel;
 import io.reactivex.SingleObserver;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -53,6 +54,11 @@ public class BookListActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_item_list);
+
+        // Create the NotificationChannel, but only on API 26+ because
+        // the NotificationChannel class is new and not in the support library
+
+        new ChannelBuilder(this).build();
 
         // Set up Action Toolbar
 
@@ -128,6 +134,7 @@ public class BookListActivity extends AppCompatActivity {
 
         mDisposable = new CompositeDisposable();
 
+        logFirebaseInstanceIdToken();
         refreshModel();
     }
 
@@ -182,9 +189,42 @@ public class BookListActivity extends AppCompatActivity {
         int googleApiAvailabilityStatus = googleApiAvailability.isGooglePlayServicesAvailable(this);
 
         if (errorCodes.contains(googleApiAvailabilityStatus)) {
+
             Log.d(TAG, "Requesting Google Services Update");
             googleApiAvailability.getErrorDialog(this, googleApiAvailabilityStatus, GOOGLE_SERVICES_UPDATE_DIALOG_REQUEST).show();
+
         }
+    }
+
+    /**
+     * We can use this instance id token to send messages
+     * specifically to a particular device.
+     *
+     * Useful for testing.
+     */
+    protected void logFirebaseInstanceIdToken() {
+
+        mViewModel
+            .getFirebaseInstanceId()
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(new SingleObserver<String>() {
+                @Override
+                public void onSubscribe(Disposable d) {
+                    // add to disposables, dispose onDestroy activity
+                    mDisposable.add(d);
+                }
+
+                @Override
+                public void onSuccess(String token) {
+                    Log.i(TAG, "Firebase instance id token:" + token);
+                }
+
+                @Override
+                public void onError(Throwable e) {
+                    mRefresh.setRefreshing(false);
+                    Snackbar.make(mRecyclerView, e.getMessage(), Snackbar.LENGTH_LONG).show();
+                }});
     }
 
     @Override

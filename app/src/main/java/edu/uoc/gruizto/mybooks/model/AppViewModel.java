@@ -16,6 +16,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
 
 
 import java.util.List;
@@ -55,6 +57,32 @@ public class AppViewModel extends AndroidViewModel {
         return mBookRepository.findById(id);
     }
     public void deleteAllBooks() { mBookRepository.deleteAll(); }
+
+    public Single<String> getFirebaseInstanceId() {
+
+        final FirebaseInstanceId instanceId = FirebaseInstanceId.getInstance();
+
+        return Single.create(new SingleOnSubscribe<String>() {
+            @Override
+            public void subscribe(final SingleEmitter<String> emitter) {
+
+                instanceId
+                    .getInstanceId()
+                    .addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
+                        @Override
+                        public void onComplete(@NonNull Task<InstanceIdResult> task) {
+                            if (!task.isSuccessful()) {
+                                emitter.onError(task.getException());
+                            } else {
+                                // Get Instance ID token
+                                String token = task.getResult().getToken();
+                                emitter.onSuccess(token);
+                            }
+                        }
+                    });
+            }
+        });
+    }
 
     /**
      * Try to sign in to Firebase with an email and password.
