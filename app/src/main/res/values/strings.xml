@@ -6,4 +6,5 @@
     <string name="default_notification_channel_name">notifications</string>
     <string name="default_notification_channel_description">notifications from Firebase</string>
     <string name="default_notification_view_action">view</string>
+    <string name="default_notification_delete_action">delete</string>
 </resources>

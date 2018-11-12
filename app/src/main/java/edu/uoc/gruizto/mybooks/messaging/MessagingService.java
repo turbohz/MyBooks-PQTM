@@ -65,6 +65,11 @@ public class MessagingService extends FirebaseMessagingService {
         String viewBookActionTitle = getString(R.string.default_notification_view_action);
         NotificationCompat.Action viewBookDetailsAction = new NotificationCompat.Action(0, viewBookActionTitle, viewBookDetailsPendingIntent);
 
+        Intent deleteBookIntent = new Intent(this, BookListActivity.class);
+        PendingIntent deleteBookPendingIntent = PendingIntent.getActivity(this, 0, deleteBookIntent, 0);
+        String deleteBookActionTitle = getString(R.string.default_notification_delete_action);
+        NotificationCompat.Action deleteBookDetailsAction = new NotificationCompat.Action(0, deleteBookActionTitle, deleteBookPendingIntent);
+
         // compose notification
 
         String channelId = getString(R.string.default_notification_channel_id);
@@ -74,6 +79,7 @@ public class MessagingService extends FirebaseMessagingService {
                 .setContentTitle("Incoming notification")
                 .setContentText(messageBody)
                 .addAction(viewBookDetailsAction)
+                .addAction(deleteBookDetailsAction)
                 ;
 
         NotificationManager notificationManager =
