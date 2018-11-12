@@ -57,6 +57,7 @@ public class AppViewModel extends AndroidViewModel {
         return mBookRepository.findById(id);
     }
     public void deleteAllBooks() { mBookRepository.deleteAll(); }
+    public void deleteBook(Book book) { mBookRepository.delete(book); }
 
     public Single<String> getFirebaseInstanceId() {
 
