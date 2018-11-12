@@ -153,9 +153,38 @@ public class BookListActivity extends AppCompatActivity {
 
         if (action == Intent.ACTION_MAIN) {
             refreshModel();
+            return;
         } else {
             // display cached book list
             mAdapter.setItems(mViewModel.getBooks());
+        }
+
+        // handle no action case
+        // (this happens when coming from the detail activity
+
+        if (null == action) {
+            return;
+        }
+
+        // handle notification intents
+
+        String position = intent.getStringExtra(BookDetailFragment.ARG_ITEM_ID);
+
+        switch (action) {
+
+            case Intent.ACTION_VIEW:
+                if (null == position) {
+                    Snackbar.make(mRecyclerView, "Book could not be found", Snackbar.LENGTH_LONG).show();
+                    return;
+                } else {
+                    showBook(position);
+                }
+                break;
+
+            default:
+
+                // Ignore other actions
+                break;
         }
     }
 
