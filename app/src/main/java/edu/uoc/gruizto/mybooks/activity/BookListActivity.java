@@ -181,6 +181,17 @@ public class BookListActivity extends AppCompatActivity {
                 }
                 break;
 
+            case Intent.ACTION_DELETE:
+                if (null == position) {
+                    Snackbar.make(mRecyclerView, "Book could not be found", Snackbar.LENGTH_LONG).show();
+                    return;
+                } else {
+                    mViewModel.deleteBook(mViewModel.findBookById(position));
+                    mAdapter.setItems(mViewModel.getBooks());
+                    Snackbar.make(mRecyclerView, "The book has been deleted", Snackbar.LENGTH_LONG).show();
+                }
+                break;
+
             default:
 
                 // Ignore other actions

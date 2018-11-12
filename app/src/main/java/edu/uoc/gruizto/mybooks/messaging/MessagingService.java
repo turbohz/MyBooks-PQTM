@@ -86,7 +86,10 @@ public class MessagingService extends FirebaseMessagingService {
         NotificationCompat.Action viewBookDetailsAction = new NotificationCompat.Action(0, viewBookActionTitle, viewBookDetailsPendingIntent);
 
         Intent deleteBookIntent = new Intent(this, BookListActivity.class);
-        PendingIntent deleteBookPendingIntent = PendingIntent.getActivity(this, 0, deleteBookIntent, 0);
+        deleteBookIntent.setAction(Intent.ACTION_DELETE);
+        deleteBookIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        deleteBookIntent.putExtra(BookDetailFragment.ARG_ITEM_ID, bookPosition);
+        PendingIntent deleteBookPendingIntent = PendingIntent.getActivity(this, 0, deleteBookIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         String deleteBookActionTitle = getString(R.string.default_notification_delete_action);
         NotificationCompat.Action deleteBookDetailsAction = new NotificationCompat.Action(0, deleteBookActionTitle, deleteBookPendingIntent);
 
