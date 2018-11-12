@@ -65,9 +65,6 @@ public class BookListActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        // Set up (floating) Action Button
-
-
         // If we find a detail view, we're in two pane mode
         // (it is only used in the large-screen layouts (res/values-w900dp) layout
 
@@ -93,8 +90,6 @@ public class BookListActivity extends AppCompatActivity {
         // Configure slide to refresh
 
         mRefresh = findViewById(R.id.book_list_refresh);
-        
-
 
         mRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -134,8 +129,34 @@ public class BookListActivity extends AppCompatActivity {
 
         mDisposable = new CompositeDisposable();
 
+        // start me up!
+
         logFirebaseInstanceIdToken();
-        refreshModel();
+
+        Intent intent = getIntent();
+
+        if (null != intent) {
+            onNewIntent(intent);
+        }
+    }
+
+    @Override
+    public void onNewIntent(Intent intent) {
+
+        super.onNewIntent(intent);
+
+        Log.i(TAG, "Handling intent:"+intent.toString());
+
+        // handle main intent
+
+        String action = intent.getAction();
+
+        if (action == Intent.ACTION_MAIN) {
+            refreshModel();
+        } else {
+            // display cached book list
+            mAdapter.setItems(mViewModel.getBooks());
+        }
     }
 
     /**
