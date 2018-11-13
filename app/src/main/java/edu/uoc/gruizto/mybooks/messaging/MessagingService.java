@@ -10,10 +10,15 @@ import android.util.Log;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
+import java.text.MessageFormat;
+
 import edu.uoc.gruizto.mybooks.R;
 import edu.uoc.gruizto.mybooks.activity.BookListActivity;
+import edu.uoc.gruizto.mybooks.fragment.BookDetailFragment;
 
 public class MessagingService extends FirebaseMessagingService {
+
+    public static final String BOOK_ID_KEY = "book_position";
 
     @Override
     public void onCreate() {
@@ -30,19 +35,31 @@ public class MessagingService extends FirebaseMessagingService {
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
 
+        String bookPosition = null;
+
         // Check if message contains a data payload
 
         if (remoteMessage.getData().size() > 0) {
-            Log.i(TAG, "Message data payload: " + remoteMessage.getData());
+            try {
+                bookPosition = remoteMessage.getData().get(BOOK_ID_KEY);
+            } catch (Exception exception) {
+                Log.e(TAG, exception.getMessage());
+            }
         }
+
+        // make bookPosition always a string
+
+        bookPosition = (null == bookPosition) ? "":bookPosition;
 
         // Check if message contains a notification payload
 
+        String message = "Message from Firebase";
+
         if (remoteMessage.getNotification() != null) {
-            String message = remoteMessage.getNotification().getBody();
-            Log.i(TAG, "Message Notification Body: " + message);
-            sendNotification(message);
+            message = remoteMessage.getNotification().getBody();
         }
+
+        displayNotification(message, bookPosition);
     }
 
     @Override
@@ -55,18 +72,47 @@ public class MessagingService extends FirebaseMessagingService {
      * Create and show a simple notification containing the received FCM message.
      *
      * @param messageBody FCM message body received.
+     * @param bookPosition Book position in the received message
      */
-    private void sendNotification(String messageBody) {
+    private void displayNotification(String messageBody, String bookPosition) {
+
+        // by using the position as notification id,
+        // we'll only get a single notification by book
+
+        int notificationId;
+
+        try {
+            notificationId = Integer.parseInt(bookPosition);
+        } catch (NumberFormatException e) {
+            notificationId = -1; // we will only accept positive values
+        }
+
+        if (notificationId < 0) {
+            Log.e(TAG, "Invalid book position received:"+bookPosition);
+            return;
+        }
 
         // prepare actions
+        // they will work on the running activity if it is on top
+
+        // required to generate a unique intent per book id and action !!
+        // otherwise, the intent is reused EVEN WITH different extras values
+        // See: https://stackoverflow.com/a/7370448/77838
+        int requestCode = notificationId;
 
         Intent viewBookDetailsIntent = new Intent(this, BookListActivity.class);
-        PendingIntent viewBookDetailsPendingIntent = PendingIntent.getActivity(this, 0, viewBookDetailsIntent, 0);
+        viewBookDetailsIntent.setAction(Intent.ACTION_VIEW);
+        viewBookDetailsIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        viewBookDetailsIntent.putExtra(BookDetailFragment.ARG_ITEM_ID, bookPosition);
+        PendingIntent viewBookDetailsPendingIntent = PendingIntent.getActivity(this, requestCode, viewBookDetailsIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         String viewBookActionTitle = getString(R.string.default_notification_view_action);
         NotificationCompat.Action viewBookDetailsAction = new NotificationCompat.Action(0, viewBookActionTitle, viewBookDetailsPendingIntent);
 
         Intent deleteBookIntent = new Intent(this, BookListActivity.class);
-        PendingIntent deleteBookPendingIntent = PendingIntent.getActivity(this, 0, deleteBookIntent, 0);
+        deleteBookIntent.setAction(Intent.ACTION_DELETE);
+        deleteBookIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        deleteBookIntent.putExtra(BookDetailFragment.ARG_ITEM_ID, bookPosition);
+        PendingIntent deleteBookPendingIntent = PendingIntent.getActivity(this, requestCode, deleteBookIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         String deleteBookActionTitle = getString(R.string.default_notification_delete_action);
         NotificationCompat.Action deleteBookDetailsAction = new NotificationCompat.Action(0, deleteBookActionTitle, deleteBookPendingIntent);
 
@@ -76,7 +122,7 @@ public class MessagingService extends FirebaseMessagingService {
         NotificationCompat.Builder notificationBuilder =
             new NotificationCompat.Builder(this, channelId)
                 .setSmallIcon(R.drawable.ic_launcher_foreground)
-                .setContentTitle("Incoming notification")
+                .setContentTitle(MessageFormat.format(getString(R.string.default_notification_title), bookPosition))
                 .setContentText(messageBody)
                 .addAction(viewBookDetailsAction)
                 .addAction(deleteBookDetailsAction)
@@ -85,6 +131,6 @@ public class MessagingService extends FirebaseMessagingService {
         NotificationManager notificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
-        notificationManager.notify(0 /* ID of notification */, notificationBuilder.build());
+        notificationManager.notify(notificationId, notificationBuilder.build());
     }
 }

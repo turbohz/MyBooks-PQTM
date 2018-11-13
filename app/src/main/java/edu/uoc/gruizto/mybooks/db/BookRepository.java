@@ -17,6 +17,8 @@ public class BookRepository {
 
     public void insert(Book book) { mBookDao.insert(book); }
 
+    public void delete(Book book) { mBookDao.delete(book); }
+
     public Book findById(String id) {
         return mBookDao.findById(id);
     }

@@ -1,5 +1,6 @@
 package edu.uoc.gruizto.mybooks.activity;
 
+import android.app.NotificationManager;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
@@ -15,12 +16,14 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewManager;
 import android.widget.TextView;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.firebase.auth.FirebaseAuth;
 
+import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.List;
 
@@ -49,6 +52,7 @@ public class BookListActivity extends AppCompatActivity {
     private AppViewModel mViewModel;
     private SimpleItemRecyclerViewAdapter mAdapter;
     private RecyclerView mRecyclerView;
+    private String mCurrentBookId; // used in two pane view
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,9 +68,6 @@ public class BookListActivity extends AppCompatActivity {
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-        // Set up (floating) Action Button
-
 
         // If we find a detail view, we're in two pane mode
         // (it is only used in the large-screen layouts (res/values-w900dp) layout
@@ -93,8 +94,6 @@ public class BookListActivity extends AppCompatActivity {
         // Configure slide to refresh
 
         mRefresh = findViewById(R.id.book_list_refresh);
-        
-
 
         mRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -134,8 +133,98 @@ public class BookListActivity extends AppCompatActivity {
 
         mDisposable = new CompositeDisposable();
 
+        // start me up!
+
         logFirebaseInstanceIdToken();
-        refreshModel();
+
+        Intent intent = getIntent();
+
+        if (null != intent) {
+            onNewIntent(intent);
+        }
+    }
+
+    @Override
+    public void onNewIntent(Intent intent) {
+
+        super.onNewIntent(intent);
+
+        Log.i(TAG, "Handling intent:"+intent.toString());
+
+        // handle main intent
+
+        String action = intent.getAction();
+
+        if (action == Intent.ACTION_MAIN) {
+            // try to do a refresh with data from Firebase
+            refreshModel();
+            return;
+        } else {
+            // display cached book list
+            mAdapter.setItems(mViewModel.getBooks());
+        }
+
+        // handle case where no action is specified
+        // (this happens when coming from the detail activity
+
+        if (null == action) {
+            return;
+        }
+
+        // handle notification intents
+
+        String position = intent.getStringExtra(BookDetailFragment.ARG_ITEM_ID);
+
+        switch (action) {
+
+            case Intent.ACTION_VIEW:
+                if (null == position || null == mViewModel.findBookById(position)) {
+                    Snackbar.make(mRecyclerView, R.string.message_book_not_found, Snackbar.LENGTH_LONG).show();
+                    return;
+                } else {
+                    showBook(position);
+                }
+                break;
+
+            case Intent.ACTION_DELETE:
+                if (null == position || null == mViewModel.findBookById(position)) {
+                    Snackbar.make(mRecyclerView, R.string.message_book_not_found, Snackbar.LENGTH_LONG).show();
+                    return;
+                } else {
+                    deleteBook(position);
+                }
+                break;
+
+            default:
+
+                // Ignore other actions
+                break;
+        }
+    }
+
+    private void deleteBook(String position) {
+        mViewModel.deleteBook(mViewModel.findBookById(position));
+        mAdapter.setItems(mViewModel.getBooks());
+        // in two pane mode, clear screen if deleted book details are being displayed
+        if (mTwoPane && position.equals(mCurrentBookId)) {
+            clearDetails();
+        }
+        //
+        Snackbar.make(mRecyclerView, MessageFormat.format(getString(R.string.message_book_deleted), position), Snackbar.LENGTH_LONG).show();
+        // dismiss notification: it's easy, since we used the position as notification id
+        NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        manager.cancel(Integer.parseInt(position));
+    }
+
+    /**
+     * clears the details pane.
+     * Use when its content is invalid (for example, when the book has been removed)
+     */
+    private void clearDetails() {
+        ViewGroup details = findViewById(R.id.item_detail_container);
+        if (null != details) {
+            details.removeAllViews();
+        }
     }
 
     /**
@@ -156,6 +245,7 @@ public class BookListActivity extends AppCompatActivity {
                 public void onSuccess(List<Book> books) {
                     mRefresh.setRefreshing(false);
                     mAdapter.setItems(books);
+                    clearDetails();
                 }
 
                 @Override
@@ -235,6 +325,32 @@ public class BookListActivity extends AppCompatActivity {
         }
     }
 
+    private void showBook(String id) {
+
+        Log.i(TAG, "Showing book "+id);
+
+        if (mTwoPane) {
+            // create fragment state bundle
+            Bundle arguments = new Bundle();
+            arguments.putString(BookDetailFragment.ARG_ITEM_ID, id);
+            // create the detail fragment, and provide it with the Bundle
+            BookDetailFragment fragment = new BookDetailFragment();
+            fragment.setArguments(arguments);
+            // add it to the activity back stack, using a fragment transaction
+            this.getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.item_detail_container, fragment)
+                    .commit();
+            mCurrentBookId = id;
+        } else {
+
+            Intent intent = new Intent(this, BookDetailActivity.class);
+            intent.setAction(Intent.ACTION_VIEW);
+            intent.putExtra(BookDetailFragment.ARG_ITEM_ID, id);
+            this.startActivity(intent);
+        }
+    }
+
     public static class SimpleItemRecyclerViewAdapter
             extends RecyclerView.Adapter<BookListActivity.SimpleItemRecyclerViewAdapter.ViewHolder> {
 
@@ -257,26 +373,8 @@ public class BookListActivity extends AppCompatActivity {
         private final View.OnClickListener mOnClickListener = new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-            Book item = (Book) view.getTag();
-            if (mTwoPane) {
-                // create fragment state bundle
-                Bundle arguments = new Bundle();
-                arguments.putString(BookDetailFragment.ARG_ITEM_ID, item.id);
-                // create the detail fragment, and provide it with the Bundle
-                BookDetailFragment fragment = new BookDetailFragment();
-                fragment.setArguments(arguments);
-                // add it to the activity back stack, using a fragment transaction
-                mParentActivity.getSupportFragmentManager()
-                        .beginTransaction()
-                        .replace(R.id.item_detail_container, fragment)
-                        .commit();
-            } else {
-                Context context = view.getContext();
-                Intent intent = new Intent(context, BookDetailActivity.class);
-                intent.putExtra(BookDetailFragment.ARG_ITEM_ID, item.id);
-
-                context.startActivity(intent);
-            }
+                Book item = (Book) view.getTag();
+                mParentActivity.showBook(item.id);
             }
         };
 
