@@ -95,11 +95,16 @@ public class MessagingService extends FirebaseMessagingService {
         // prepare actions
         // they will work on the running activity if it is on top
 
+        // required to generate a unique intent per book id and action !!
+        // otherwise, the intent is reused EVEN WITH different extras values
+        // See: https://stackoverflow.com/a/7370448/77838
+        int requestCode = notificationId;
+
         Intent viewBookDetailsIntent = new Intent(this, BookListActivity.class);
         viewBookDetailsIntent.setAction(Intent.ACTION_VIEW);
         viewBookDetailsIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
         viewBookDetailsIntent.putExtra(BookDetailFragment.ARG_ITEM_ID, bookPosition);
-        PendingIntent viewBookDetailsPendingIntent = PendingIntent.getActivity(this, 0, viewBookDetailsIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent viewBookDetailsPendingIntent = PendingIntent.getActivity(this, requestCode, viewBookDetailsIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         String viewBookActionTitle = getString(R.string.default_notification_view_action);
         NotificationCompat.Action viewBookDetailsAction = new NotificationCompat.Action(0, viewBookActionTitle, viewBookDetailsPendingIntent);
 
@@ -107,7 +112,7 @@ public class MessagingService extends FirebaseMessagingService {
         deleteBookIntent.setAction(Intent.ACTION_DELETE);
         deleteBookIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
         deleteBookIntent.putExtra(BookDetailFragment.ARG_ITEM_ID, bookPosition);
-        PendingIntent deleteBookPendingIntent = PendingIntent.getActivity(this, 0, deleteBookIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent deleteBookPendingIntent = PendingIntent.getActivity(this, requestCode, deleteBookIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         String deleteBookActionTitle = getString(R.string.default_notification_delete_action);
         NotificationCompat.Action deleteBookDetailsAction = new NotificationCompat.Action(0, deleteBookActionTitle, deleteBookPendingIntent);
 
