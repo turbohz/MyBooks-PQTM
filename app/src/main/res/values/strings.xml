@@ -2,9 +2,14 @@
     <string name="app_name">MyBooks</string>
     <string name="title_item_detail">Item Detail</string>
     <string name="book_cover">Book cover</string>
+
     <string name="default_notification_channel_id">fcm_default_channel</string>
     <string name="default_notification_channel_name">notifications</string>
     <string name="default_notification_channel_description">notifications from Firebase</string>
     <string name="default_notification_view_action">view</string>
     <string name="default_notification_delete_action">delete</string>
+    <string name="default_notification_title">Notification for book at {0}</string>
+
+    <string name="message_book_not_found">Book could not be found</string>
+    <string name="message_book_deleted">The book at {0} has been deleted</string>
 </resources>

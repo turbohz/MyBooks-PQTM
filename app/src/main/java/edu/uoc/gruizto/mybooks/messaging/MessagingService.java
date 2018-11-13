@@ -10,6 +10,8 @@ import android.util.Log;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
+import java.text.MessageFormat;
+
 import edu.uoc.gruizto.mybooks.R;
 import edu.uoc.gruizto.mybooks.activity.BookListActivity;
 import edu.uoc.gruizto.mybooks.fragment.BookDetailFragment;
@@ -99,7 +101,7 @@ public class MessagingService extends FirebaseMessagingService {
         NotificationCompat.Builder notificationBuilder =
             new NotificationCompat.Builder(this, channelId)
                 .setSmallIcon(R.drawable.ic_launcher_foreground)
-                .setContentTitle("Incoming notification")
+                .setContentTitle(MessageFormat.format(getString(R.string.default_notification_title), bookPosition))
                 .setContentText(messageBody)
                 .addAction(viewBookDetailsAction)
                 .addAction(deleteBookDetailsAction)

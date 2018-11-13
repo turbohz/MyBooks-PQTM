@@ -21,6 +21,7 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.firebase.auth.FirebaseAuth;
 
+import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.List;
 
@@ -174,7 +175,7 @@ public class BookListActivity extends AppCompatActivity {
 
             case Intent.ACTION_VIEW:
                 if (null == position) {
-                    Snackbar.make(mRecyclerView, "Book could not be found", Snackbar.LENGTH_LONG).show();
+                    Snackbar.make(mRecyclerView, R.string.message_book_not_found, Snackbar.LENGTH_LONG).show();
                     return;
                 } else {
                     showBook(position);
@@ -183,12 +184,12 @@ public class BookListActivity extends AppCompatActivity {
 
             case Intent.ACTION_DELETE:
                 if (null == position) {
-                    Snackbar.make(mRecyclerView, "Book could not be found", Snackbar.LENGTH_LONG).show();
+                    Snackbar.make(mRecyclerView, R.string.message_book_not_found, Snackbar.LENGTH_LONG).show();
                     return;
                 } else {
                     mViewModel.deleteBook(mViewModel.findBookById(position));
                     mAdapter.setItems(mViewModel.getBooks());
-                    Snackbar.make(mRecyclerView, "The book has been deleted", Snackbar.LENGTH_LONG).show();
+                    Snackbar.make(mRecyclerView, MessageFormat.format(getString(R.string.message_book_deleted), position), Snackbar.LENGTH_LONG).show();
                 }
                 break;
 
