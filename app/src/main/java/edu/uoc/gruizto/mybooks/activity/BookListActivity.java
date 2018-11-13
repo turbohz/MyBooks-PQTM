@@ -187,9 +187,7 @@ public class BookListActivity extends AppCompatActivity {
                     Snackbar.make(mRecyclerView, R.string.message_book_not_found, Snackbar.LENGTH_LONG).show();
                     return;
                 } else {
-                    mViewModel.deleteBook(mViewModel.findBookById(position));
-                    mAdapter.setItems(mViewModel.getBooks());
-                    Snackbar.make(mRecyclerView, MessageFormat.format(getString(R.string.message_book_deleted), position), Snackbar.LENGTH_LONG).show();
+                    deleteBook(position);
                 }
                 break;
 
@@ -198,6 +196,12 @@ public class BookListActivity extends AppCompatActivity {
                 // Ignore other actions
                 break;
         }
+    }
+
+    private void deleteBook(String position) {
+        mViewModel.deleteBook(mViewModel.findBookById(position));
+        mAdapter.setItems(mViewModel.getBooks());
+        Snackbar.make(mRecyclerView, MessageFormat.format(getString(R.string.message_book_deleted), position), Snackbar.LENGTH_LONG).show();
     }
 
     /**
