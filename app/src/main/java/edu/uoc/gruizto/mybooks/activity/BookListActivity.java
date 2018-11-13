@@ -16,6 +16,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewManager;
 import android.widget.TextView;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -51,6 +52,7 @@ public class BookListActivity extends AppCompatActivity {
     private AppViewModel mViewModel;
     private SimpleItemRecyclerViewAdapter mAdapter;
     private RecyclerView mRecyclerView;
+    private String mCurrentBookId; // used in two pane view
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -202,10 +204,26 @@ public class BookListActivity extends AppCompatActivity {
     private void deleteBook(String position) {
         mViewModel.deleteBook(mViewModel.findBookById(position));
         mAdapter.setItems(mViewModel.getBooks());
+        // in two pane mode, clear screen if deleted book details are being displayed
+        if (mTwoPane && position.equals(mCurrentBookId)) {
+            clearDetails();
+        }
+        //
         Snackbar.make(mRecyclerView, MessageFormat.format(getString(R.string.message_book_deleted), position), Snackbar.LENGTH_LONG).show();
         // dismiss notification: it's easy, since we used the position as notification id
         NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         manager.cancel(Integer.parseInt(position));
+    }
+
+    /**
+     * clears the details pane.
+     * Use when its content is invalid (for example, when the book has been removed)
+     */
+    private void clearDetails() {
+        ViewGroup details = findViewById(R.id.item_detail_container);
+        if (null != details) {
+            details.removeAllViews();
+        }
     }
 
     /**
@@ -321,6 +339,7 @@ public class BookListActivity extends AppCompatActivity {
                     .beginTransaction()
                     .replace(R.id.item_detail_container, fragment)
                     .commit();
+            mCurrentBookId = id;
         } else {
 
             Intent intent = new Intent(this, BookDetailActivity.class);
