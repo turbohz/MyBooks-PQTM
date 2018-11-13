@@ -121,7 +121,7 @@ public class MessagingService extends FirebaseMessagingService {
         String channelId = getString(R.string.default_notification_channel_id);
         NotificationCompat.Builder notificationBuilder =
             new NotificationCompat.Builder(this, channelId)
-                .setSmallIcon(R.drawable.ic_launcher_foreground)
+                .setSmallIcon(R.drawable.ic_notification)
                 .setContentTitle(MessageFormat.format(getString(R.string.default_notification_title), bookPosition))
                 .setContentText(messageBody)
                 .setLights(getResources().getColor(R.color.notificationLedColor), 1000, 200)
