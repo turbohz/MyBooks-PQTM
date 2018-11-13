@@ -174,7 +174,7 @@ public class BookListActivity extends AppCompatActivity {
         switch (action) {
 
             case Intent.ACTION_VIEW:
-                if (null == position) {
+                if (null == position || null == mViewModel.findBookById(position)) {
                     Snackbar.make(mRecyclerView, R.string.message_book_not_found, Snackbar.LENGTH_LONG).show();
                     return;
                 } else {
@@ -183,7 +183,7 @@ public class BookListActivity extends AppCompatActivity {
                 break;
 
             case Intent.ACTION_DELETE:
-                if (null == position) {
+                if (null == position || null == mViewModel.findBookById(position)) {
                     Snackbar.make(mRecyclerView, R.string.message_book_not_found, Snackbar.LENGTH_LONG).show();
                     return;
                 } else {
