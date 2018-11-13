@@ -156,6 +156,7 @@ public class BookListActivity extends AppCompatActivity {
         String action = intent.getAction();
 
         if (action == Intent.ACTION_MAIN) {
+            // try to do a refresh with data from Firebase
             refreshModel();
             return;
         } else {
@@ -163,7 +164,7 @@ public class BookListActivity extends AppCompatActivity {
             mAdapter.setItems(mViewModel.getBooks());
         }
 
-        // handle no action case
+        // handle case where no action is specified
         // (this happens when coming from the detail activity
 
         if (null == action) {
@@ -244,6 +245,7 @@ public class BookListActivity extends AppCompatActivity {
                 public void onSuccess(List<Book> books) {
                     mRefresh.setRefreshing(false);
                     mAdapter.setItems(books);
+                    clearDetails();
                 }
 
                 @Override
