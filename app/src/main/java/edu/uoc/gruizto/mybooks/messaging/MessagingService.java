@@ -76,6 +76,22 @@ public class MessagingService extends FirebaseMessagingService {
      */
     private void displayNotification(String messageBody, String bookPosition) {
 
+        // by using the position as notification id,
+        // we'll only get a single notification by book
+
+        int notificationId;
+
+        try {
+            notificationId = Integer.parseInt(bookPosition);
+        } catch (NumberFormatException e) {
+            notificationId = -1; // we will only accept positive values
+        }
+
+        if (notificationId < 0) {
+            Log.e(TAG, "Invalid book position received:"+bookPosition);
+            return;
+        }
+
         // prepare actions
         // they will work on the running activity if it is on top
 
@@ -110,6 +126,6 @@ public class MessagingService extends FirebaseMessagingService {
         NotificationManager notificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
-        notificationManager.notify(0 /* ID of notification */, notificationBuilder.build());
+        notificationManager.notify(notificationId, notificationBuilder.build());
     }
 }
