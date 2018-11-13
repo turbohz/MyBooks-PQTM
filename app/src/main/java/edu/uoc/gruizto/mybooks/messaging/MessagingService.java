@@ -124,6 +124,7 @@ public class MessagingService extends FirebaseMessagingService {
                 .setSmallIcon(R.drawable.ic_launcher_foreground)
                 .setContentTitle(MessageFormat.format(getString(R.string.default_notification_title), bookPosition))
                 .setContentText(messageBody)
+                .setColor(getResources().getColor(R.color.colorPrimary))
                 .addAction(viewBookDetailsAction)
                 .addAction(deleteBookDetailsAction)
                 ;
