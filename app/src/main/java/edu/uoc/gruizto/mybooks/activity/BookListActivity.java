@@ -1,5 +1,6 @@
 package edu.uoc.gruizto.mybooks.activity;
 
+import android.app.NotificationManager;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
@@ -202,6 +203,9 @@ public class BookListActivity extends AppCompatActivity {
         mViewModel.deleteBook(mViewModel.findBookById(position));
         mAdapter.setItems(mViewModel.getBooks());
         Snackbar.make(mRecyclerView, MessageFormat.format(getString(R.string.message_book_deleted), position), Snackbar.LENGTH_LONG).show();
+        // dismiss notification: it's easy, since we used the position as notification id
+        NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        manager.cancel(Integer.parseInt(position));
     }
 
     /**
