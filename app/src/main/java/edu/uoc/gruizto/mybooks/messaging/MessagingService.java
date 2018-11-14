@@ -130,6 +130,7 @@ public class MessagingService extends FirebaseMessagingService {
                 .setLights(getResources().getColor(R.color.notificationLedColor), 1000, 200)
                 .setColor(getResources().getColor(R.color.colorPrimary))
                 .setSound(Uri.parse("android.resource://edu.uoc.gruizto.mybooks/"+R.raw.notification))
+                .setVibrate(new long[]{ 100, 200, 300, 400, 500, 400, 300, 200, 400 })
                 .addAction(viewBookDetailsAction)
                 .addAction(deleteBookDetailsAction)
                 ;
