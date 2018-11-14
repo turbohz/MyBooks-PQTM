@@ -4,6 +4,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
@@ -126,6 +127,7 @@ public class MessagingService extends FirebaseMessagingService {
                 .setContentText(messageBody)
                 .setLights(getResources().getColor(R.color.notificationLedColor), 1000, 200)
                 .setColor(getResources().getColor(R.color.colorPrimary))
+                .setSound(Uri.parse("android.resource://edu.uoc.gruizto.mybooks/"+R.raw.notification))
                 .addAction(viewBookDetailsAction)
                 .addAction(deleteBookDetailsAction)
                 ;
