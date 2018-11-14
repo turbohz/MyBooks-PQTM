@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationManagerCompat;
 import android.util.Log;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
@@ -122,6 +123,7 @@ public class MessagingService extends FirebaseMessagingService {
         String channelId = getString(R.string.default_notification_channel_id);
         NotificationCompat.Builder notificationBuilder =
             new NotificationCompat.Builder(this, channelId)
+                .setPriority(NotificationManagerCompat.IMPORTANCE_HIGH)
                 .setSmallIcon(R.drawable.ic_notification)
                 .setContentTitle(MessageFormat.format(getString(R.string.default_notification_title), bookPosition))
                 .setContentText(messageBody)
