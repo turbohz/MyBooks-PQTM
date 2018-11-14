@@ -3,7 +3,7 @@
     <string name="title_item_detail">Item Detail</string>
     <string name="book_cover">Book cover</string>
 
-    <string name="default_notification_channel_id">fcm_default_channel</string>
+    <string name="default_notification_channel_id">edu.uoc.gruizto.mybooks.default_channel</string>
     <string name="default_notification_channel_name">notifications</string>
     <string name="default_notification_channel_description">notifications from Firebase</string>
     <string name="default_notification_view_action">view</string>
