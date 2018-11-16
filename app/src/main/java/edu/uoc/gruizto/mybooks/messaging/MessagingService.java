@@ -4,7 +4,9 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationManagerCompat;
 import android.util.Log;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
@@ -121,9 +123,14 @@ public class MessagingService extends FirebaseMessagingService {
         String channelId = getString(R.string.default_notification_channel_id);
         NotificationCompat.Builder notificationBuilder =
             new NotificationCompat.Builder(this, channelId)
-                .setSmallIcon(R.drawable.ic_launcher_foreground)
+                .setPriority(NotificationManagerCompat.IMPORTANCE_HIGH)
+                .setSmallIcon(R.drawable.ic_notification)
                 .setContentTitle(MessageFormat.format(getString(R.string.default_notification_title), bookPosition))
                 .setContentText(messageBody)
+                .setLights(getResources().getColor(R.color.notificationLedColor), 1000, 200)
+                .setColor(getResources().getColor(R.color.colorPrimary))
+                .setSound(Uri.parse("android.resource://edu.uoc.gruizto.mybooks/"+R.raw.notification))
+                .setVibrate(new long[]{ 100, 200, 300, 400, 500, 400, 300, 200, 400 })
                 .addAction(viewBookDetailsAction)
                 .addAction(deleteBookDetailsAction)
                 ;

@@ -6,4 +6,5 @@
     <color name="colorAccent">#FF4081</color>
     <color name="textColorPrimary">#212121</color>
     <color name="textColorSecondary">#737373</color>
+    <color name="notificationLedColor">#0066CC</color>
 </resources>
