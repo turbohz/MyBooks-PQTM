@@ -113,12 +113,11 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
     fun refresh(): Single<List<Book>> {
 
         val fetchBooks = Single.create(SingleOnSubscribe<List<Book>> { emitter ->
-            val dbReference = FirebaseDatabase.getInstance().reference
 
             // try to fetch data, and feed the observable according to the result
-            // we don't want to listen to remote changes, so we will unsubscribe immediately
-            dbReference
-                .addValueEventListener(object : ValueEventListener {
+            FirebaseDatabase.getInstance()
+                .reference
+                .addListenerForSingleValueEvent(object : ValueEventListener {
                     override fun onDataChange(@NonNull dataSnapshot: DataSnapshot) {
                         Log.w(AppViewModel.TAG, "onDataChange")
                         val books = dataSnapshot.child("books").getValue(object : GenericTypeIndicator<ArrayList<Book>>() {})
@@ -127,7 +126,6 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
                             // as is required in the exercise instructions,
                             // instead of an error, we return the last cached data
                             emitter.onSuccess(this@AppViewModel.books)
-                            dbReference.removeEventListener(this)
                             return
                         }
 
@@ -149,7 +147,6 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
                         // we can now return the updated book list
 
                         emitter.onSuccess(this@AppViewModel.books)
-                        dbReference.removeEventListener(this)
                     }
 
                     override fun onCancelled(@NonNull databaseError: DatabaseError) {
@@ -157,7 +154,6 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
                         // as is required in the exercise instructions,
                         // instead of an error, we return the last cached data
                         emitter.onSuccess(this@AppViewModel.books)
-                        dbReference.removeEventListener(this)
                     }
                 })
         })
