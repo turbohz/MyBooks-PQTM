@@ -74,10 +74,10 @@ public class BookDetailFragment extends Fragment {
             StringBuilder builder = new StringBuilder();
             String lineBreak = "<br/>";
             builder
-                    .append("<strong>" + book.title + "</strong>")
+                    .append("<strong>" + book.getTitle() + "</strong>")
                     .append(lineBreak)
-                    .append(book.publicationDate)
-                    .append("<p>" + book.description + "</p>")
+                    .append(book.getPublicationDate())
+                    .append("<p>" + book.getDescription() + "</p>")
             ;
 
             ((TextView) rootView.findViewById(R.id.item_detail)).setText(Html.fromHtml(builder.toString()));
@@ -85,14 +85,14 @@ public class BookDetailFragment extends Fragment {
             // Update picture
 
             ImageView cover = rootView.findViewById(R.id.book_cover);
-            Picasso.get().load(book.coverUrl).into(cover);
+            Picasso.get().load(book.getCoverUrl()).into(cover);
 
             // Update view title
 
             Activity activity = this.getActivity();
             CollapsingToolbarLayout appBarLayout = (CollapsingToolbarLayout) activity.findViewById(R.id.toolbar_layout);
             if (appBarLayout != null) {
-                appBarLayout.setTitle(book.title);
+                appBarLayout.setTitle(book.getTitle());
             }
         } else {
 

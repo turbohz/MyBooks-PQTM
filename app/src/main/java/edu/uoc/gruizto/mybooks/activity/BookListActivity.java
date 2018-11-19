@@ -2,7 +2,7 @@ package edu.uoc.gruizto.mybooks.activity;
 
 import android.app.NotificationManager;
 import androidx.lifecycle.ViewModelProviders;
-import android.content.Context;
+
 import android.content.Intent;
 import android.os.Bundle;
 import androidx.annotation.LayoutRes;
@@ -16,7 +16,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewManager;
 import android.widget.TextView;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -374,7 +373,7 @@ public class BookListActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Book item = (Book) view.getTag();
-                mParentActivity.showBook(item.id);
+                mParentActivity.showBook(item.getId());
             }
         };
 
@@ -415,8 +414,8 @@ public class BookListActivity extends AppCompatActivity {
 
         @Override
         public void onBindViewHolder(final BookListActivity.SimpleItemRecyclerViewAdapter.ViewHolder holder, int position) {
-            holder.titleView.setText(mValues.get(position).title);
-            holder.authorView.setText(mValues.get(position).author);
+            holder.titleView.setText(mValues.get(position).getTitle());
+            holder.authorView.setText(mValues.get(position).getAuthor());
             // store Book instance as a TAG
             holder.itemView.setTag(mValues.get(position));
             holder.itemView.setOnClickListener(mOnClickListener);
