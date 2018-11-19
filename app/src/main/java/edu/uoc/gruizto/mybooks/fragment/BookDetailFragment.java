@@ -1,10 +1,10 @@
 package edu.uoc.gruizto.mybooks.fragment;
 
 import android.app.Activity;
-import android.arch.lifecycle.ViewModelProviders;
-import android.support.design.widget.CollapsingToolbarLayout;
+import androidx.lifecycle.ViewModelProviders;
+import com.google.android.material.appbar.CollapsingToolbarLayout;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
+import androidx.fragment.app.Fragment;
 import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
