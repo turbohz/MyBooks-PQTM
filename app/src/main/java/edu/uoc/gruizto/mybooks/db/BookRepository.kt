@@ -22,7 +22,7 @@ class BookRepository(application: Application) {
         mBookDao.delete(book)
     }
 
-    fun findById(id: String): Book {
+    fun findById(id: String): Book? {
         return mBookDao.findById(id)
     }
 

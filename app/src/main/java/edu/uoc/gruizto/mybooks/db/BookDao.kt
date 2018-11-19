@@ -11,7 +11,7 @@ interface BookDao {
     val all: List<Book>
 
     @Query("SELECT * FROM mybooks WHERE id=:id LIMIT 1")
-    fun findById(id: String): Book
+    fun findById(id: String): Book?
 
     @Insert
     fun insert(book: Book)
