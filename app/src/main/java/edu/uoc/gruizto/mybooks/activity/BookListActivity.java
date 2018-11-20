@@ -111,7 +111,6 @@ public class BookListActivity extends AppCompatActivity {
         // Configure slide to refresh
 
         mRefresh = findViewById(R.id.book_list_refresh);
-
         mRefresh.setOnRefreshListener(() -> {
             mAdapter.clear();
             refreshBookList();
@@ -254,31 +253,21 @@ public class BookListActivity extends AppCompatActivity {
 
         Log.i(TAG, "Handling intent:"+intent.toString());
 
-        // handle main intent
-
         String action = intent.getAction();
 
-        if (action == Intent.ACTION_MAIN) {
-            // try to do a refresh with data from Firebase
-            refreshBookList();
-            return;
-        } else {
-            // display cached book list
-            mAdapter.setItems(mViewModel.getBooks());
+        if(null == action ){
+            action = "";
         }
-
-        // handle case where no action is specified
-        // (this happens when coming from the detail activity
-
-        if (null == action) {
-            return;
-        }
-
-        // handle notification intents
 
         String position = intent.getStringExtra(BookDetailFragment.ARG_ITEM_ID);
 
         switch (action) {
+
+            case Intent.ACTION_MAIN:
+                // try to do a refresh with data from Firebase
+                // when we first launch the app
+                refreshBookList();
+                break;
 
             case Intent.ACTION_VIEW:
                 if (null == position || null == mViewModel.findBookById(position)) {
@@ -299,8 +288,9 @@ public class BookListActivity extends AppCompatActivity {
                 break;
 
             default:
-
-                // Ignore other actions
+                // this can happen when using the back button
+                // just display what we have
+                displayCachedBookList();
                 break;
         }
     }
@@ -328,6 +318,10 @@ public class BookListActivity extends AppCompatActivity {
         if (null != details) {
             details.removeAllViews();
         }
+    }
+
+    private void displayCachedBookList() {
+        mAdapter.setItems(mViewModel.getBooks());
     }
 
     /**
