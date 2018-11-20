@@ -70,9 +70,9 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
      *
      * If the user is already signed in, returns the User straight away.
      *
-     * @return a single of user (or error 
+     * @return a single of user (or error)
      */
-    private fun signIn(): Single<FirebaseUser?> {
+    private fun signIn(): Single<FirebaseUser> {
 
         val auth = FirebaseAuth.getInstance()
 
