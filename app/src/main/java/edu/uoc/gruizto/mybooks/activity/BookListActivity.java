@@ -75,6 +75,11 @@ public class BookListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_item_list);
 
+        // Disposable is needed to clean up the Rx entities
+        // used in the asynchronous refresh of the view model
+
+        mDisposable = new CompositeDisposable();
+
         // Create the NotificationChannel, but only on API 26+ because
         // the NotificationChannel class is new and not in the support library
 
@@ -234,11 +239,6 @@ public class BookListActivity extends AppCompatActivity {
                 }
             });
         }
-
-        // Disposable is needed to clean up the Rx entities
-        // used in the asynchronous refresh of the view model
-
-        mDisposable = new CompositeDisposable();
 
         // start me up!
 
