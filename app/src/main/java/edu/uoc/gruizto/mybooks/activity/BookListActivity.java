@@ -37,6 +37,7 @@ import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -104,12 +105,7 @@ public class BookListActivity extends AppCompatActivity {
         mRecyclerView = findViewById(R.id.book_list);
         assert mRecyclerView != null;
 
-        mAdapter = new SimpleItemRecyclerViewAdapter(
-                this,
-                mViewModel.getBooks(),
-                mTwoPane
-            );
-
+        mAdapter = new SimpleItemRecyclerViewAdapter(this, mTwoPane);
         mRecyclerView.setAdapter(mAdapter);
 
         // Configure slide to refresh
@@ -491,10 +487,8 @@ public class BookListActivity extends AppCompatActivity {
             }
         };
 
-        SimpleItemRecyclerViewAdapter(BookListActivity parent,
-                                      List<Book> items,
-                                      boolean twoPane) {
-            mValues = items;
+        SimpleItemRecyclerViewAdapter(BookListActivity parent, boolean twoPane) {
+            mValues = new ArrayList<Book>();
             mParentActivity = parent;
             mTwoPane = twoPane;
         }
