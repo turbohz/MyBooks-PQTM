@@ -48,6 +48,7 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
 
     // Get Instance ID token
     val firebaseInstanceId: Single<String>
+
         get() {
             return Single.create {
                 FirebaseInstanceId.getInstance()
@@ -69,7 +70,7 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
      *
      * If the user is already signed in, returns the User straight away.
      *
-     * @return Single<FirebaseUser> an RxJava Single value providing a User, or an Exception
+     * @return a single of user (or error 
      */
     private fun signIn(): Single<FirebaseUser?> {
 
@@ -108,8 +109,8 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
      *
      * Notice we first try to sign in, if we are not authenticated.
      *
-     * @return Single<List></List><Book>>
-    </Book> */
+     * @return a single instance of list of books
+     **/
     fun refresh(): Single<List<Book>> {
 
         val fetchBooks = Single.create(SingleOnSubscribe<List<Book>> { emitter ->
