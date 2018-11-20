@@ -118,7 +118,7 @@ public class BookListActivity extends AppCompatActivity {
 
         mRefresh.setOnRefreshListener(() -> {
             mAdapter.clear();
-            refreshModel();
+            refreshBookList();
         });
 
         // Configure drawer
@@ -264,7 +264,7 @@ public class BookListActivity extends AppCompatActivity {
 
         if (action == Intent.ACTION_MAIN) {
             // try to do a refresh with data from Firebase
-            refreshModel();
+            refreshBookList();
             return;
         } else {
             // display cached book list
@@ -337,7 +337,7 @@ public class BookListActivity extends AppCompatActivity {
     /**
      * use Rx Single to get book data asynchronously
      */
-    private void refreshModel() {
+    private void refreshBookList() {
         mViewModel.refresh()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
