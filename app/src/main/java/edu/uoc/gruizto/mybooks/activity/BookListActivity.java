@@ -21,6 +21,12 @@ import android.widget.TextView;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.firebase.auth.FirebaseAuth;
+import com.mikepenz.materialdrawer.Drawer;
+import com.mikepenz.materialdrawer.DrawerBuilder;
+import com.mikepenz.materialdrawer.model.DividerDrawerItem;
+import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
+import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
+import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
 import java.text.MessageFormat;
 import java.util.Arrays;
@@ -52,6 +58,7 @@ public class BookListActivity extends AppCompatActivity {
     private SimpleItemRecyclerViewAdapter mAdapter;
     private RecyclerView mRecyclerView;
     private String mCurrentBookId; // used in two pane view
+    private Drawer mDrawer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -101,6 +108,32 @@ public class BookListActivity extends AppCompatActivity {
                 refreshModel();
             }
         });
+
+        // Configure drawer
+
+        PrimaryDrawerItem item1 = new PrimaryDrawerItem().withIdentifier(1).withName(R.string.drawer_item_home);
+        SecondaryDrawerItem item2 = new SecondaryDrawerItem().withIdentifier(2).withName(R.string.drawer_item_settings);
+
+        // create the drawer and remember the `mDrawer` result
+
+        mDrawer = new DrawerBuilder()
+            .withActivity(this)
+            .withToolbar(toolbar)
+            .addDrawerItems(
+                    item1,
+                    new DividerDrawerItem(),
+                    item2,
+                    new SecondaryDrawerItem()
+            )
+            .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
+                @Override
+                public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
+                    // do something with the clicked item :D
+                    return true;
+                }
+            })
+            .build();
+
 
         // Set up (floating) Action Button to reset app state
         // FIXME: Get rid of this before deploy
