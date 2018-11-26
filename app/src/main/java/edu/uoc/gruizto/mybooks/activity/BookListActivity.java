@@ -21,12 +21,16 @@ import android.widget.TextView;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.firebase.auth.FirebaseAuth;
+import com.mikepenz.materialdrawer.AccountHeader;
+import com.mikepenz.materialdrawer.AccountHeaderBuilder;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
 import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
+import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
 import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
+import com.mikepenz.materialdrawer.model.interfaces.IProfile;
 
 import java.text.MessageFormat;
 import java.util.Arrays;
@@ -111,6 +115,21 @@ public class BookListActivity extends AppCompatActivity {
 
         // Configure drawer
 
+        // Create the AccountHeader
+        AccountHeader header = new AccountHeaderBuilder()
+            .withActivity(this)
+            //.withHeaderBackground(R.drawable.header)
+            .addProfiles(
+                    new ProfileDrawerItem().withName("Gerard Ruiz").withEmail("gruizto@uoc.edu").withIcon(getResources().getDrawable(R.drawable.portrait))
+            )
+            .withOnAccountHeaderListener(new AccountHeader.OnAccountHeaderListener() {
+                @Override
+                public boolean onProfileChanged(View view, IProfile profile, boolean currentProfile) {
+                    return false;
+                }
+            })
+            .build();
+
         PrimaryDrawerItem item1 = new PrimaryDrawerItem().withIdentifier(1).withName(R.string.drawer_item_home);
         SecondaryDrawerItem item2 = new SecondaryDrawerItem().withIdentifier(2).withName(R.string.drawer_item_settings);
 
@@ -118,6 +137,7 @@ public class BookListActivity extends AppCompatActivity {
 
         mDrawer = new DrawerBuilder()
             .withActivity(this)
+            .withAccountHeader(header)
             .withToolbar(toolbar)
             .addDrawerItems(
                     item1,
