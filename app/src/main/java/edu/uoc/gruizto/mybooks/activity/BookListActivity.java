@@ -25,12 +25,9 @@ import com.mikepenz.materialdrawer.AccountHeader;
 import com.mikepenz.materialdrawer.AccountHeaderBuilder;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
-import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
-import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
-import com.mikepenz.materialdrawer.model.interfaces.IProfile;
 
 import java.text.MessageFormat;
 import java.util.Arrays;
@@ -118,20 +115,17 @@ public class BookListActivity extends AppCompatActivity {
         // Create the AccountHeader
         AccountHeader header = new AccountHeaderBuilder()
             .withActivity(this)
-            //.withHeaderBackground(R.drawable.header)
             .addProfiles(
-                    new ProfileDrawerItem().withName("Gerard Ruiz").withEmail("gruizto@uoc.edu").withIcon(getResources().getDrawable(R.drawable.portrait))
+                    new ProfileDrawerItem()
+                        .withName("Gerard Ruiz")
+                        .withEmail("gruizto@uoc.edu")
+                        .withIcon(getResources().getDrawable(R.drawable.portrait))
             )
-            .withOnAccountHeaderListener(new AccountHeader.OnAccountHeaderListener() {
-                @Override
-                public boolean onProfileChanged(View view, IProfile profile, boolean currentProfile) {
-                    return false;
-                }
-            })
             .build();
 
-        PrimaryDrawerItem item1 = new PrimaryDrawerItem().withIdentifier(1).withName(R.string.drawer_item_home);
-        SecondaryDrawerItem item2 = new SecondaryDrawerItem().withIdentifier(2).withName(R.string.drawer_item_settings);
+        PrimaryDrawerItem item1 = new PrimaryDrawerItem().withName(R.string.drawer_item_share_with_app);
+        PrimaryDrawerItem item2 = new PrimaryDrawerItem().withName(R.string.drawer_item_copy_to_clipboard);
+        PrimaryDrawerItem item3 = new PrimaryDrawerItem().withName(R.string.drawer_item_share_to_whatsapp);
 
         // create the drawer and remember the `mDrawer` result
 
@@ -140,10 +134,11 @@ public class BookListActivity extends AppCompatActivity {
             .withAccountHeader(header)
             .withToolbar(toolbar)
             .addDrawerItems(
-                    item1,
-                    new DividerDrawerItem(),
-                    item2,
-                    new SecondaryDrawerItem()
+                    // items are not sections that remain selected, they're actions
+                    // withSelectable(false) keeps them "unselected"
+                    item1.withIdentifier(1).withSelectable(false),
+                    item2.withIdentifier(2).withSelectable(false),
+                    item3.withIdentifier(3).withSelectable(false)
             )
             .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
                 @Override
@@ -153,6 +148,9 @@ public class BookListActivity extends AppCompatActivity {
                 }
             })
             .build();
+
+        // this avoids having any item appear "selected"
+        mDrawer.setSelection(0);
 
 
         // Set up (floating) Action Button to reset app state
