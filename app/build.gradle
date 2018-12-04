@@ -20,6 +20,10 @@ android {
         }
     }
     buildTypes {
+        debug {
+            debuggable true
+            multiDexEnabled true
+        }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
@@ -28,6 +32,9 @@ android {
 }
 
 dependencies {
+    // we use multidex on debug builds
+    debugImplementation 'com.android.support:multidex:1.0.3'
+
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation 'androidx.appcompat:appcompat:1.0.2'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
