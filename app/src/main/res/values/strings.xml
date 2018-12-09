@@ -21,4 +21,6 @@
     <string name="message_share_to_clipboard_success">Text copied to clipboard!</string>
 
     <string name="send_to">Share with</string>
+
+    <string name="purchase_success">Purchase completed successfully!</string>
 </resources>

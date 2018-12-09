@@ -1,3 +1,4 @@
 <paths>
-    <files-path name="share" path="share/"  />
+    <files-path name="share" path="share/" />
+    <files-path name="web" path="web/" />
 </paths>

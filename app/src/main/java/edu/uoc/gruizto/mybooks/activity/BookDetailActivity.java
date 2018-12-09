@@ -1,27 +1,28 @@
 package edu.uoc.gruizto.mybooks.activity;
 
 import android.content.Intent;
-import android.content.res.Resources;
+import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.appcompat.widget.Toolbar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.ActionBar;
 import androidx.core.app.NavUtils;
-
-import android.util.Base64;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.File;
 
+import androidx.core.content.FileProvider;
 import edu.uoc.gruizto.mybooks.R;
 import edu.uoc.gruizto.mybooks.fragment.BookDetailFragment;
+import edu.uoc.gruizto.mybooks.storage.StorageHelper;
 
 /**
  * An activity representing a single Item detail screen. This
@@ -30,6 +31,8 @@ import edu.uoc.gruizto.mybooks.fragment.BookDetailFragment;
  * in a {@link BookListActivity}.
  */
 public class BookDetailActivity extends AppCompatActivity {
+
+    private static final String TAG = BookListActivity.class.getName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,18 +82,32 @@ public class BookDetailActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-                try {
-                    InputStream formData = getResources().openRawResource(R.raw.form);
-                    byte[] rawData = new byte[formData.available()];
-                    formData.read(rawData);
-                    String encodedData = Base64.encodeToString(rawData, Base64.NO_PADDING);
-                    webView.loadData(encodedData,"text/html","base64");
-                    webView.setVisibility(View.VISIBLE);
-                    fab.hide();
+                fab.hide();
 
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                // copy form and allow to access if via FileProvider
+
+                StorageHelper storageHelper = new StorageHelper(BookDetailActivity.this);
+                File form = storageHelper.copyAssetToInternalStorage(R.raw.form, "web", "form.html");
+                Uri formUri = FileProvider.getUriForFile(BookDetailActivity.this, "edu.uoc.gruizto.mybooks.fileprovider", form);
+
+                webView.loadUrl(formUri.toString());
+                webView.setVisibility(View.VISIBLE);
+
+                webView.setWebViewClient(new WebViewClient(){
+                    @Override
+                    public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                        Log.i(TAG, "Trying to navigate to: " + url );
+
+                        //TODO: decode url parameters and check they have been filled in
+
+                        view.setVisibility(View.INVISIBLE);
+                        fab.show();
+
+                        Snackbar.make(view, getResources().getText(R.string.purchase_success), Snackbar.LENGTH_LONG).show();
+
+                        return true;
+                    }
+                });
             }
         });
     }
