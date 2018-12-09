@@ -23,4 +23,5 @@
     <string name="send_to">Share with</string>
 
     <string name="purchase_success">Purchase completed successfully!</string>
+    <string name="purchase_failure">Please, fill in ALL fields!</string>
 </resources>

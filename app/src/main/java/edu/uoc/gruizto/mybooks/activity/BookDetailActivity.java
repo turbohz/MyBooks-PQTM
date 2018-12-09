@@ -8,7 +8,6 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.ActionBar;
 import androidx.core.app.NavUtils;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.webkit.WebView;
@@ -96,14 +95,33 @@ public class BookDetailActivity extends AppCompatActivity {
                 webView.setWebViewClient(new WebViewClient(){
                     @Override
                     public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                        Log.i(TAG, "Trying to navigate to: " + url );
 
-                        //TODO: decode url parameters and check they have been filled in
+                        boolean success = false;
 
-                        view.setVisibility(View.INVISIBLE);
-                        fab.show();
+                        // Validate parameters
 
-                        Snackbar.make(view, getResources().getText(R.string.purchase_success), Snackbar.LENGTH_LONG).show();
+                        Uri uri = Uri.parse(url);
+
+                        success =   uri.getQueryParameter("name") != "" &&
+                                    uri.getQueryParameter("num")  != "" &&
+                                    uri.getQueryParameter("date") != "";
+
+                        if (success) {
+
+                            // restore fab and hide webview
+
+                            view.setVisibility(View.INVISIBLE);
+                            fab.show();
+
+                        } else {
+
+                            // reload to retry
+
+                            view.reload();
+                        }
+
+                        String message = (String) getResources().getText(success ? R.string.purchase_success: R.string.purchase_failure);
+                        Snackbar.make(view, message, Snackbar.LENGTH_LONG).show();
 
                         return true;
                     }
