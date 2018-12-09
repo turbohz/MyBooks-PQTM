@@ -1,6 +1,7 @@
 package edu.uoc.gruizto.mybooks.activity;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.appcompat.widget.Toolbar;
@@ -8,9 +9,19 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.ActionBar;
 import androidx.core.app.NavUtils;
 import android.view.MenuItem;
+import android.view.View;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
+
+import java.io.File;
+
+import androidx.core.content.FileProvider;
 import edu.uoc.gruizto.mybooks.R;
 import edu.uoc.gruizto.mybooks.fragment.BookDetailFragment;
+import edu.uoc.gruizto.mybooks.storage.StorageHelper;
 
 /**
  * An activity representing a single Item detail screen. This
@@ -19,6 +30,8 @@ import edu.uoc.gruizto.mybooks.fragment.BookDetailFragment;
  * in a {@link BookListActivity}.
  */
 public class BookDetailActivity extends AppCompatActivity {
+
+    private static final String TAG = BookListActivity.class.getName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +71,63 @@ public class BookDetailActivity extends AppCompatActivity {
                     .add(R.id.item_detail_container, fragment)
                     .commit();
         }
+
+        // setup web view
+
+        final WebView webView = (WebView) findViewById(R.id.web_view);
+        final FloatingActionButton fab = findViewById(R.id.fab_buy);
+
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                fab.hide();
+
+                // copy form and allow to access if via FileProvider
+
+                StorageHelper storageHelper = new StorageHelper(BookDetailActivity.this);
+                File form = storageHelper.copyAssetToInternalStorage(R.raw.form, "web", "form.html");
+                Uri formUri = FileProvider.getUriForFile(BookDetailActivity.this, "edu.uoc.gruizto.mybooks.fileprovider", form);
+
+                webView.loadUrl(formUri.toString());
+                webView.setVisibility(View.VISIBLE);
+
+                webView.setWebViewClient(new WebViewClient(){
+                    @Override
+                    public boolean shouldOverrideUrlLoading(WebView view, String url) {
+
+                        boolean success = false;
+
+                        // Validate parameters
+
+                        Uri uri = Uri.parse(url);
+
+                        success =   uri.getQueryParameter("name") != "" &&
+                                    uri.getQueryParameter("num")  != "" &&
+                                    uri.getQueryParameter("date") != "";
+
+                        if (success) {
+
+                            // restore fab and hide webview
+
+                            view.setVisibility(View.INVISIBLE);
+                            fab.show();
+
+                        } else {
+
+                            // reload to retry
+
+                            view.reload();
+                        }
+
+                        String message = (String) getResources().getText(success ? R.string.purchase_success: R.string.purchase_failure);
+                        Snackbar.make(view, message, Snackbar.LENGTH_LONG).show();
+
+                        return true;
+                    }
+                });
+            }
+        });
     }
 
     @Override
