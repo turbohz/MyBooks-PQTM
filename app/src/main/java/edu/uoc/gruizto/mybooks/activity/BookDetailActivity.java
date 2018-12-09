@@ -8,6 +8,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.ActionBar;
 import androidx.core.app.NavUtils;
 import android.view.MenuItem;
+import android.view.View;
+
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
 
 import edu.uoc.gruizto.mybooks.R;
 import edu.uoc.gruizto.mybooks.fragment.BookDetailFragment;
@@ -58,6 +62,14 @@ public class BookDetailActivity extends AppCompatActivity {
                     .add(R.id.item_detail_container, fragment)
                     .commit();
         }
+
+        FloatingActionButton fab = findViewById(R.id.fab_buy);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Snackbar.make(view, "Purchase book", Snackbar.LENGTH_LONG).show();
+            }
+        });
     }
 
     @Override
