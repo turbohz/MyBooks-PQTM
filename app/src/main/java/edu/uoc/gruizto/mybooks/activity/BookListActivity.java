@@ -158,9 +158,10 @@ public class BookListActivity extends AppCompatActivity {
                     switch (position) {
                         case 1: // Generic share
 
-                            builder = new ShareIntentBuilder();
+                            builder = new ShareIntentBuilder(context);
                             intent = builder
                                     .setText(shareText)
+                                    .setImage(R.raw.icon)
                                     .build();
 
                             startActivity(Intent.createChooser(intent, getResources().getText(R.string.send_to)));
@@ -183,9 +184,10 @@ public class BookListActivity extends AppCompatActivity {
 
                         case 3: // share to whatsapp
 
-                            builder = new ShareIntentBuilder();
+                            builder = new ShareIntentBuilder(context);
                             intent = builder
                                     .setText(shareText)
+                                    .setImage(R.raw.icon)
                                     .setPackage("com.whatsapp")
                                     .build();
                             try {
