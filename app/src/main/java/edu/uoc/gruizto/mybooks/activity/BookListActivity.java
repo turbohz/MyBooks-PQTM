@@ -21,6 +21,13 @@ import android.widget.TextView;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.firebase.auth.FirebaseAuth;
+import com.mikepenz.materialdrawer.AccountHeader;
+import com.mikepenz.materialdrawer.AccountHeaderBuilder;
+import com.mikepenz.materialdrawer.Drawer;
+import com.mikepenz.materialdrawer.DrawerBuilder;
+import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
+import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
+import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
 import java.text.MessageFormat;
 import java.util.Arrays;
@@ -52,6 +59,7 @@ public class BookListActivity extends AppCompatActivity {
     private SimpleItemRecyclerViewAdapter mAdapter;
     private RecyclerView mRecyclerView;
     private String mCurrentBookId; // used in two pane view
+    private Drawer mDrawer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -101,6 +109,49 @@ public class BookListActivity extends AppCompatActivity {
                 refreshModel();
             }
         });
+
+        // Configure drawer
+
+        // Create the AccountHeader
+        AccountHeader header = new AccountHeaderBuilder()
+            .withActivity(this)
+            .addProfiles(
+                    new ProfileDrawerItem()
+                        .withName("Gerard Ruiz")
+                        .withEmail("gruizto@uoc.edu")
+                        .withIcon(getResources().getDrawable(R.drawable.portrait))
+            )
+            .build();
+
+        PrimaryDrawerItem item1 = new PrimaryDrawerItem().withName(R.string.drawer_item_share_with_app);
+        PrimaryDrawerItem item2 = new PrimaryDrawerItem().withName(R.string.drawer_item_copy_to_clipboard);
+        PrimaryDrawerItem item3 = new PrimaryDrawerItem().withName(R.string.drawer_item_share_to_whatsapp);
+
+        // create the drawer and remember the `mDrawer` result
+
+        mDrawer = new DrawerBuilder()
+            .withActivity(this)
+            .withAccountHeader(header)
+            .withToolbar(toolbar)
+            .addDrawerItems(
+                    // items are not sections that remain selected, they're actions
+                    // withSelectable(false) keeps them "unselected"
+                    item1.withIdentifier(1).withSelectable(false),
+                    item2.withIdentifier(2).withSelectable(false),
+                    item3.withIdentifier(3).withSelectable(false)
+            )
+            .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
+                @Override
+                public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
+                    // do something with the clicked item :D
+                    return true;
+                }
+            })
+            .build();
+
+        // this avoids having any item appear "selected"
+        mDrawer.setSelection(0);
+
 
         // Set up (floating) Action Button to reset app state
         // FIXME: Get rid of this before deploy

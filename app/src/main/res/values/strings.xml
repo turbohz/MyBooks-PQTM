@@ -12,4 +12,8 @@
 
     <string name="message_book_not_found">Book could not be found</string>
     <string name="message_book_deleted">The book at {0} has been deleted</string>
+
+    <string name="drawer_item_share_with_app">Share with app</string>
+    <string name="drawer_item_copy_to_clipboard">Copy to clipboard</string>
+    <string name="drawer_item_share_to_whatsapp">Share to Whatsapp</string>
 </resources>
