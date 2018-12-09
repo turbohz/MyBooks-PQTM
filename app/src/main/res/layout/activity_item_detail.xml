@@ -49,6 +49,15 @@
         android:layout_margin="@dimen/fab_margin"
         app:layout_anchor="@+id/item_detail_container"
         app:layout_anchorGravity="top|end"
-        app:srcCompat="@drawable/ic_buy" />
+        app:srcCompat="@drawable/ic_buy"
+        tools:fabSize="normal" />
+
+    <WebView
+        android:id="@+id/web_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/design_default_color_background"
+        android:visibility="invisible"
+        app:layout_anchorGravity="top|left" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

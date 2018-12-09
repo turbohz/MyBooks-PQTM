@@ -1,17 +1,24 @@
 package edu.uoc.gruizto.mybooks.activity;
 
 import android.content.Intent;
+import android.content.res.Resources;
 import android.os.Bundle;
 
 import androidx.appcompat.widget.Toolbar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.ActionBar;
 import androidx.core.app.NavUtils;
+
+import android.util.Base64;
 import android.view.MenuItem;
 import android.view.View;
+import android.webkit.WebView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
+
+import java.io.IOException;
+import java.io.InputStream;
 
 import edu.uoc.gruizto.mybooks.R;
 import edu.uoc.gruizto.mybooks.fragment.BookDetailFragment;
@@ -63,11 +70,27 @@ public class BookDetailActivity extends AppCompatActivity {
                     .commit();
         }
 
-        FloatingActionButton fab = findViewById(R.id.fab_buy);
+        // setup web view
+
+        final WebView webView = (WebView) findViewById(R.id.web_view);
+        final FloatingActionButton fab = findViewById(R.id.fab_buy);
+
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Purchase book", Snackbar.LENGTH_LONG).show();
+
+                try {
+                    InputStream formData = getResources().openRawResource(R.raw.form);
+                    byte[] rawData = new byte[formData.available()];
+                    formData.read(rawData);
+                    String encodedData = Base64.encodeToString(rawData, Base64.NO_PADDING);
+                    webView.loadData(encodedData,"text/html","base64");
+                    webView.setVisibility(View.VISIBLE);
+                    fab.hide();
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         });
     }
