@@ -1,7 +1,6 @@
 package edu.uoc.gruizto.mybooks.fragment;
 
 import android.app.Activity;
-import androidx.lifecycle.ViewModelProviders;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 import android.os.Bundle;
 import androidx.fragment.app.Fragment;
@@ -16,7 +15,6 @@ import com.squareup.picasso.Picasso;
 
 import edu.uoc.gruizto.mybooks.R;
 import edu.uoc.gruizto.mybooks.db.Book;
-import edu.uoc.gruizto.mybooks.model.AppViewModel;
 import edu.uoc.gruizto.mybooks.activity.BookDetailActivity;
 import edu.uoc.gruizto.mybooks.activity.BookListActivity;
 
@@ -29,10 +27,13 @@ import edu.uoc.gruizto.mybooks.activity.BookListActivity;
  */
 public class BookDetailFragment extends Fragment {
     /**
-     * The fragment argument representing the item ID that this fragment
-     * represents.
+     * The key to pass around the book id
      */
     public static final String ARG_ITEM_ID = "item_id";
+    /**
+     * The key use to store the book as a Parcel
+     */
+    public static final String ARG_BOOK_KEY = "book";
 
     /**
      * The content this fragment is presenting.
@@ -50,13 +51,8 @@ public class BookDetailFragment extends Fragment {
 
         super.onCreate(savedInstanceState);
 
-        if (getArguments().containsKey(ARG_ITEM_ID)) {
-            String bookId = getArguments().getString(ARG_ITEM_ID);
-            AppViewModel model = ViewModelProviders.of(this).get(AppViewModel.class);
-            mBook = model.findBookById(bookId);
-
-            Activity activity = this.getActivity();
-            CollapsingToolbarLayout appBarLayout = (CollapsingToolbarLayout) activity.findViewById(R.id.toolbar_layout);
+        if (getArguments().containsKey(ARG_BOOK_KEY)) {
+            mBook = getArguments().getParcelable(ARG_BOOK_KEY);
         }
     }
 

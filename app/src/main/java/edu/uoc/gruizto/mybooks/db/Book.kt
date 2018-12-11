@@ -17,7 +17,7 @@ class Book() : Parcelable {
     var coverUrl: String? = null
 
     constructor(parcel: Parcel) : this() {
-        id = parcel.readString()
+        id = parcel.readString()!!
         title = parcel.readString()
         author = parcel.readString()
         publicationDate = parcel.readString()

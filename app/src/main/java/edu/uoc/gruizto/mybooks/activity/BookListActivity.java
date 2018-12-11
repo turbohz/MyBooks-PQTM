@@ -16,6 +16,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
+import android.os.Parcelable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -443,16 +445,22 @@ public class BookListActivity extends AppCompatActivity {
         if (mTwoPane) {
             // create fragment state bundle
             Bundle arguments = new Bundle();
-            arguments.putString(BookDetailFragment.ARG_ITEM_ID, id);
-            // create the detail fragment, and provide it with the Bundle
-            BookDetailFragment fragment = new BookDetailFragment();
-            fragment.setArguments(arguments);
-            // add it to the activity back stack, using a fragment transaction
-            this.getSupportFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.item_detail_container, fragment)
-                    .commit();
-            mCurrentBookId = id;
+            Parcelable book = mViewModel.findBookById(id);
+
+            if (null != book) {
+
+                mCurrentBookId = id;
+
+                arguments.putParcelable(BookDetailFragment.ARG_BOOK_KEY, book);
+                BookDetailFragment fragment = new BookDetailFragment();
+                fragment.setArguments(arguments);
+                // add it to the activity back stack, using a fragment transaction
+                this.getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.item_detail_container, fragment)
+                        .commit();
+            }
+
         } else {
 
             Intent intent = new Intent(this, BookDetailActivity.class);

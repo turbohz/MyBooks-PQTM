@@ -8,6 +8,8 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.ActionBar;
 import androidx.core.app.NavUtils;
+
+import android.os.Parcelable;
 import android.view.MenuItem;
 import android.view.View;
 import android.webkit.WebView;
@@ -19,8 +21,10 @@ import com.google.android.material.snackbar.Snackbar;
 import java.io.File;
 
 import androidx.core.content.FileProvider;
+import androidx.lifecycle.ViewModelProviders;
 import edu.uoc.gruizto.mybooks.R;
 import edu.uoc.gruizto.mybooks.fragment.BookDetailFragment;
+import edu.uoc.gruizto.mybooks.model.AppViewModel;
 import edu.uoc.gruizto.mybooks.storage.StorageHelper;
 
 /**
@@ -56,20 +60,24 @@ public class BookDetailActivity extends AppCompatActivity {
         // http://developer.android.com/guide/components/fragments.html
         //
         if (savedInstanceState == null) {
-            // create fragment state bundle
-            Bundle arguments = new Bundle();
-            arguments.putString(
-                    BookDetailFragment.ARG_ITEM_ID,
-                    getIntent().getStringExtra(BookDetailFragment.ARG_ITEM_ID)
-            );
-            // create the detail fragment, and provide it with the Bundle
-            BookDetailFragment fragment = new BookDetailFragment();
-            fragment.setArguments(arguments);
-            // add it to the activity, using a fragment manager transaction
-            getSupportFragmentManager()
-                    .beginTransaction()
-                    .add(R.id.item_detail_container, fragment)
-                    .commit();
+
+            AppViewModel model = ViewModelProviders.of(this).get(AppViewModel.class);
+            String bookId = getIntent().getStringExtra(BookDetailFragment.ARG_ITEM_ID);
+            Parcelable book = model.findBookById(bookId);
+
+            if (null != book) {
+                // create fragment state bundle
+                Bundle arguments = new Bundle();
+                arguments.putParcelable(BookDetailFragment.ARG_BOOK_KEY, book);
+                // create the detail fragment, and provide it with the Bundle
+                BookDetailFragment fragment = new BookDetailFragment();
+                fragment.setArguments(arguments);
+                // add it to the activity, using a fragment manager transaction
+                getSupportFragmentManager()
+                        .beginTransaction()
+                        .add(R.id.item_detail_container, fragment)
+                        .commit();
+            }
         }
 
         // setup web view
