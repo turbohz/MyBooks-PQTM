@@ -111,12 +111,9 @@ public class BookListActivity extends AppCompatActivity {
 
         mRefresh = findViewById(R.id.book_list_refresh);
 
-        mRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                mAdapter.clear();
-                refreshModel();
-            }
+        mRefresh.setOnRefreshListener(() -> {
+            mAdapter.clear();
+            refreshModel();
         });
 
         // Configure drawer
@@ -219,24 +216,21 @@ public class BookListActivity extends AppCompatActivity {
             // Set up (floating) Action Button to reset app state
 
             FloatingActionButton fab = findViewById(R.id.fab);
-            fab.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Snackbar.make(view, "App state reset", Snackbar.LENGTH_LONG);
-                    FirebaseAuth.getInstance().signOut();
-                    mViewModel.deleteAllBooks();
-                    mAdapter.clear();
+            fab.setOnClickListener(view -> {
+                Snackbar.make(view, "App state reset", Snackbar.LENGTH_LONG);
+                FirebaseAuth.getInstance().signOut();
+                mViewModel.deleteAllBooks();
+                mAdapter.clear();
 
-                    // if in twoPane view, clear book details fragment
+                // if in twoPane view, clear book details fragment
 
-                    if (mTwoPane) {
-                        BookDetailFragment fragment = new BookDetailFragment();
-                        fragment.setArguments(new Bundle());
-                        getSupportFragmentManager()
-                                .beginTransaction()
-                                .replace(R.id.item_detail_container, fragment)
-                                .commit();
-                    }
+                if (mTwoPane) {
+                    BookDetailFragment fragment = new BookDetailFragment();
+                    fragment.setArguments(new Bundle());
+                    getSupportFragmentManager()
+                            .beginTransaction()
+                            .replace(R.id.item_detail_container, fragment)
+                            .commit();
                 }
             });
         }
