@@ -37,7 +37,7 @@ public class BookDetailFragment extends Fragment {
     /**
      * The content this fragment is presenting.
      */
-    private Book book;
+    private Book mBook;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -53,7 +53,7 @@ public class BookDetailFragment extends Fragment {
         if (getArguments().containsKey(ARG_ITEM_ID)) {
             String bookId = getArguments().getString(ARG_ITEM_ID);
             AppViewModel model = ViewModelProviders.of(this).get(AppViewModel.class);
-            book = model.findBookById(bookId);
+            mBook = model.findBookById(bookId);
 
             Activity activity = this.getActivity();
             CollapsingToolbarLayout appBarLayout = (CollapsingToolbarLayout) activity.findViewById(R.id.toolbar_layout);
@@ -69,15 +69,15 @@ public class BookDetailFragment extends Fragment {
 
         // Show the book details
 
-        if (book != null) {
+        if (mBook != null) {
 
             StringBuilder builder = new StringBuilder();
             String lineBreak = "<br/>";
             builder
-                    .append("<strong>" + book.getTitle() + "</strong>")
+                    .append("<strong>" + mBook.getTitle() + "</strong>")
                     .append(lineBreak)
-                    .append(book.getPublicationDate())
-                    .append("<p>" + book.getDescription() + "</p>")
+                    .append(mBook.getPublicationDate())
+                    .append("<p>" + mBook.getDescription() + "</p>")
             ;
 
             ((TextView) rootView.findViewById(R.id.item_detail)).setText(Html.fromHtml(builder.toString()));
@@ -85,14 +85,14 @@ public class BookDetailFragment extends Fragment {
             // Update picture
 
             ImageView cover = rootView.findViewById(R.id.book_cover);
-            Picasso.get().load(book.getCoverUrl()).into(cover);
+            Picasso.get().load(mBook.getCoverUrl()).into(cover);
 
             // Update view title
 
             Activity activity = this.getActivity();
             CollapsingToolbarLayout appBarLayout = (CollapsingToolbarLayout) activity.findViewById(R.id.toolbar_layout);
             if (appBarLayout != null) {
-                appBarLayout.setTitle(book.getTitle());
+                appBarLayout.setTitle(mBook.getTitle());
             }
         } else {
 
