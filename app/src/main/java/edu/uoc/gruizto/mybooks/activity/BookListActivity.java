@@ -38,6 +38,7 @@ import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.List;
 
+import edu.uoc.gruizto.mybooks.BuildConfig;
 import edu.uoc.gruizto.mybooks.R;
 import edu.uoc.gruizto.mybooks.db.Book;
 import edu.uoc.gruizto.mybooks.fragment.BookDetailFragment;
@@ -211,31 +212,32 @@ public class BookListActivity extends AppCompatActivity {
         // this avoids having any item appear "selected"
         mDrawer.setSelection(0);
 
+        if (BuildConfig.DEBUG) {
 
-        // Set up (floating) Action Button to reset app state
-        // FIXME: Get rid of this before deploy
+            // Set up (floating) Action Button to reset app state
 
-	    FloatingActionButton fab = findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "App state reset", Snackbar.LENGTH_LONG);
-                FirebaseAuth.getInstance().signOut();
-                mViewModel.deleteAllBooks();
-                mAdapter.clear();
+            FloatingActionButton fab = findViewById(R.id.fab);
+            fab.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Snackbar.make(view, "App state reset", Snackbar.LENGTH_LONG);
+                    FirebaseAuth.getInstance().signOut();
+                    mViewModel.deleteAllBooks();
+                    mAdapter.clear();
 
-                // if in twoPane view, clear book details fragment
+                    // if in twoPane view, clear book details fragment
 
-                if (mTwoPane) {
-                    BookDetailFragment fragment = new BookDetailFragment();
-                    fragment.setArguments(new Bundle());
-                    getSupportFragmentManager()
-                        .beginTransaction()
-                        .replace(R.id.item_detail_container, fragment)
-                        .commit();
+                    if (mTwoPane) {
+                        BookDetailFragment fragment = new BookDetailFragment();
+                        fragment.setArguments(new Bundle());
+                        getSupportFragmentManager()
+                                .beginTransaction()
+                                .replace(R.id.item_detail_container, fragment)
+                                .commit();
+                    }
                 }
-            }
-        });
+            });
+        }
 
         // Disposable is needed to clean up the Rx entities
         // used in the asynchronous refresh of the view model
