@@ -85,11 +85,11 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
             // signIn with email and password
             return Single.create { emitter ->
                 auth
-                    .signInWithEmailAndPassword(USER_EMAIL, USER_PASSWORD)
+                    .signInAnonymously()
                     .addOnCompleteListener {
                         val user = auth.currentUser
                         if (it.isSuccessful && null != user) {
-                            Log.d(AppViewModel.TAG, "signInWithEmail:success")
+                            Log.d(AppViewModel.TAG, "signInAnonymously:success")
                             emitter.onSuccess(user)
                         } else {
                             // If sign in fails, pass an error to be shown
@@ -165,8 +165,5 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
     companion object {
 
         private val TAG = AppViewModel::class.java.name
-        // FIXME: this should not be hardcoded, and secrets should not be stored in the app
-        private val USER_EMAIL = "gruizto@uoc.edu"
-        private val USER_PASSWORD = "QhW6Yk97sjvNr"
     }
 }
