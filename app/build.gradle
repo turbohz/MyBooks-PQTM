@@ -8,6 +8,7 @@ android {
     compileSdkVersion 28
     defaultConfig {
         applicationId "edu.uoc.gruizto.mybooks"
+        vectorDrawables.useSupportLibrary = true
         minSdkVersion 18
         targetSdkVersion 28
         versionCode 1
