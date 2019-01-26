@@ -11,7 +11,7 @@ class BookRepository(application: Application) {
 
     init {
         val db = AppDatabase.getDatabase(application)
-        mBookDao = db!!.bookDao()
+        mBookDao = db.bookDao()
     }
 
     fun insert(book: Book) {
