@@ -145,13 +145,7 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
                                 val id = i.nextIndex().toString()
                                 book = i.next()
                                 book.id = id
-
-                                if (exists(book)) {
-                                    Log.i(AppViewModel.TAG, "Book already exist " + book.title!!)
-                                } else {
-                                    Log.i(AppViewModel.TAG, "Inserting " + book.title!!)
-                                    insertBook(book)
-                                }
+                                insertBook(book)
                             }
 
                             db.setTransactionSuccessful()

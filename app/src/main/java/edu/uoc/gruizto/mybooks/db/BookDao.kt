@@ -1,9 +1,6 @@
 package edu.uoc.gruizto.mybooks.db
 
-import androidx.room.Dao
-import androidx.room.Delete
-import androidx.room.Insert
-import androidx.room.Query
+import androidx.room.*
 
 @Dao
 interface BookDao {
@@ -13,7 +10,7 @@ interface BookDao {
     @Query("SELECT * FROM mybooks WHERE id=:id LIMIT 1")
     fun findById(id: String): Book?
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     fun insert(book: Book)
 
     @Delete
