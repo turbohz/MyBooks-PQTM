@@ -1,6 +1,7 @@
 package edu.uoc.gruizto.mybooks.model
 
 import android.app.Application
+import android.database.sqlite.SQLiteConstraintException
 import androidx.lifecycle.AndroidViewModel
 import androidx.annotation.NonNull
 import android.util.Log
@@ -132,17 +133,33 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
 
                         val i = books.listIterator()
                         var book: Book
-                        //The iterator.nextIndex() will return the index for you.
-                        while (i.hasNext()) {
-                            val id = i.nextIndex().toString()
-                            book = i.next()
-                            book.id = id
-                            if (exists(book)) {
-                                Log.i(AppViewModel.TAG, "Book already exist " + book.title!!)
-                            } else {
-                                Log.i(AppViewModel.TAG, "Inserting " + book.title!!)
-                                insertBook(book)
+                        val db = mBookRepository.db
+
+                        db.beginTransaction()
+
+                        try {
+
+                            //The iterator.nextIndex() will return the index for you.
+
+                            while (i.hasNext()) {
+                                val id = i.nextIndex().toString()
+                                book = i.next()
+                                book.id = id
+
+                                if (exists(book)) {
+                                    Log.i(AppViewModel.TAG, "Book already exist " + book.title!!)
+                                } else {
+                                    Log.i(AppViewModel.TAG, "Inserting " + book.title!!)
+                                    insertBook(book)
+                                }
                             }
+
+                            db.setTransactionSuccessful()
+
+                        } catch (e : java.lang.Exception) {
+                            Log.e(AppViewModel.TAG, "Exception when inserting book:" + e.message)
+                        } finally {
+                            db.endTransaction()
                         }
 
                         // we can now return the updated book list

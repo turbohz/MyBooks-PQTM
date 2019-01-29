@@ -4,15 +4,12 @@ import android.app.Application
 
 class BookRepository(application: Application) {
 
-    private val mBookDao: BookDao
+    val db:AppDatabase = AppDatabase.getDatabase(application)
+
+    private val mBookDao: BookDao = db.bookDao()
 
     val all: List<Book>
         get() = mBookDao.all
-
-    init {
-        val db = AppDatabase.getDatabase(application)
-        mBookDao = db.bookDao()
-    }
 
     fun insert(book: Book) {
         mBookDao.insert(book)
