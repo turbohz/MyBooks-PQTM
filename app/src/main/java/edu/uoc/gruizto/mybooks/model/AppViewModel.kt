@@ -1,21 +1,14 @@
 package edu.uoc.gruizto.mybooks.model
 
 import android.app.Application
-import androidx.lifecycle.AndroidViewModel
-import androidx.annotation.NonNull
 import android.util.Log
-
+import androidx.lifecycle.AndroidViewModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.GenericTypeIndicator
-import com.google.firebase.database.ValueEventListener
 import com.google.firebase.iid.FirebaseInstanceId
-
 import edu.uoc.gruizto.mybooks.db.Book
 import edu.uoc.gruizto.mybooks.db.BookRepository
+import edu.uoc.gruizto.mybooks.remote.Firebase
 import io.reactivex.Completable
 import io.reactivex.CompletableOnSubscribe
 import io.reactivex.Single
@@ -26,10 +19,6 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
 
     val books: List<Book>
         get() = mBookRepository.all
-
-    fun exists(book: Book): Boolean {
-        return null != findBookById(book.id)
-    }
 
     fun insertBook(book: Book) {
         mBookRepository.insert(book)
@@ -45,61 +34,6 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
 
     fun deleteBook(book: Book) {
         mBookRepository.delete(book)
-    }
-
-    // Get Instance ID token
-    val firebaseInstanceId: Single<String>
-
-        get() {
-            return Single.create {
-                FirebaseInstanceId.getInstance()
-                    .instanceId
-                    .addOnCompleteListener { task ->
-                        if (task.isSuccessful && null != task.result) {
-                            val token = task.result!!.token
-                            it.onSuccess(token)
-                        } else {
-                            Log.w(AppViewModel.TAG, "Unable to obtain firebaseInstanceId", task.exception)
-                            it.onError(Exception("Unexpected error!"))
-                        }
-                    }
-            }
-        }
-
-    /**
-     * Try to sign in to Firebase with an email and password.
-     *
-     * If the user is already signed in, returns the User straight away.
-     *
-     * @return a single of user (or error)
-     */
-    private fun signIn(): Single<FirebaseUser> {
-
-        val auth = FirebaseAuth.getInstance()
-
-        if (null != auth.currentUser) {
-            // trivial case: already signed in
-            Log.i(AppViewModel.TAG, "Already signed in")
-            return Single.just(auth.currentUser)
-
-        } else {
-            // signIn with email and password
-            return Single.create { emitter ->
-                auth
-                    .signInAnonymously()
-                    .addOnCompleteListener {
-                        val user = auth.currentUser
-                        if (it.isSuccessful && null != user) {
-                            Log.d(AppViewModel.TAG, "signInAnonymously:success")
-                            emitter.onSuccess(user)
-                        } else {
-                            // If sign in fails, pass an error to be shown
-                            Log.w(AppViewModel.TAG, "signInWithEmail:failure", it.exception)
-                            emitter.onError(Exception("Unable to authenticate with Firebase"))
-                        }
-                    }
-            }
-        }
     }
 
     /**
@@ -119,63 +53,31 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
      **/
     fun sync(): Completable {
 
-        val sync = Completable.create(CompletableOnSubscribe { emitter ->
+        val sync = { books: List<Book> ->
+            Completable.create { emitter ->
+                val db = mBookRepository.db
 
-            // try to fetch data, and feed the observable according to the result
-            FirebaseDatabase.getInstance()
-                .reference
-                .addListenerForSingleValueEvent(object : ValueEventListener {
-                    override fun onDataChange(@NonNull dataSnapshot: DataSnapshot) {
-                        Log.w(AppViewModel.TAG, "onDataChange")
-                        val books = dataSnapshot.child("books").getValue(object : GenericTypeIndicator<ArrayList<Book>>() {})
+                db.beginTransaction()
 
-                        if (null == books) {
-                            // as is required in the exercise instructions,
-                            // instead of an error, we return the last cached data
-                            emitter.onComplete()
-                            return
-                        }
+                try {
 
-                        val i = books.listIterator()
-                        var book: Book
-                        val db = mBookRepository.db
-
-                        db.beginTransaction()
-
-                        try {
-
-                            //The iterator.nextIndex() will return the index for you.
-
-                            while (i.hasNext()) {
-                                val id = i.nextIndex().toString()
-                                book = i.next()
-                                book.id = id
-                                insertBook(book)
-                            }
-
-                            db.setTransactionSuccessful()
-
-                        } catch (e : java.lang.Exception) {
-                            Log.e(AppViewModel.TAG, "Exception when inserting book:" + e.message)
-                        } finally {
-                            db.endTransaction()
-                        }
-
-                        // we can now return the updated book list
-
-                        emitter.onComplete()
+                    for (book: Book in books) {
+                        insertBook(book)
                     }
 
-                    override fun onCancelled(@NonNull databaseError: DatabaseError) {
-                        Log.i(AppViewModel.TAG, "Firebase error " + databaseError.message)
-                        // as is required in the exercise instructions,
-                        // instead of an error, we return the last cached data
-                        emitter.onComplete()
-                    }
-                })
-        })
+                    db.setTransactionSuccessful()
 
-        return signIn().flatMapCompletable { sync }
+                } catch (e: java.lang.Exception) {
+                    Log.e(AppViewModel.TAG, "Exception when inserting book:" + e.message)
+                } finally {
+                    db.endTransaction()
+                }
+
+                emitter.onComplete()
+            }
+        }
+
+        return Firebase.fetch().flatMapCompletable(sync)
     }
 
     companion object {

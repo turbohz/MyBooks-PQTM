@@ -47,6 +47,7 @@ import edu.uoc.gruizto.mybooks.db.Book;
 import edu.uoc.gruizto.mybooks.fragment.BookDetailFragment;
 import edu.uoc.gruizto.mybooks.messaging.ChannelBuilder;
 import edu.uoc.gruizto.mybooks.model.AppViewModel;
+import edu.uoc.gruizto.mybooks.remote.Firebase;
 import edu.uoc.gruizto.mybooks.share.ShareIntentBuilder;
 import io.reactivex.SingleObserver;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -392,8 +393,7 @@ public class BookListActivity extends AppCompatActivity {
      */
     protected void logFirebaseInstanceIdToken() {
 
-        mViewModel
-            .getFirebaseInstanceId()
+        Firebase.Companion.getFirebaseInstanceId()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(new SingleObserver<String>() {
