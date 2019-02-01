@@ -328,7 +328,8 @@ public class BookListActivity extends AppCompatActivity {
      * use Rx Single to get book data asynchronously
      */
     private void refreshBookList() {
-        mViewModel.refresh()
+        mViewModel.sync()
+            .toSingle(()->mViewModel.getBooks())
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(new SingleObserver<List<Book>>() {

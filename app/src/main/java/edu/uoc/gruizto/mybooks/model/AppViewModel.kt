@@ -17,8 +17,9 @@ import com.google.firebase.iid.FirebaseInstanceId
 
 import edu.uoc.gruizto.mybooks.db.Book
 import edu.uoc.gruizto.mybooks.db.BookRepository
+import io.reactivex.Completable
+import io.reactivex.CompletableOnSubscribe
 import io.reactivex.Single
-import io.reactivex.SingleOnSubscribe
 
 class AppViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -103,18 +104,23 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     /**
-     * Refresh the book data from the server.
+     * Synchronizes Firebase and Room data.
+     *
+     * Synchronization always happens in one direction:
+     *
+     * FROM remote TO local
      *
      * As specified in the exercise instructions,
-     * in case an error happens, we return the last cached data.
+     * local data acts as a kind of cache, so we can ignore
+     * errors and use local data to display it.
      *
      * Notice we first try to sign in, if we are not authenticated.
      *
-     * @return a single instance of list of books
+     * @return a Completable instance alerting when the sync is completed
      **/
-    fun refresh(): Single<List<Book>> {
+    fun sync(): Completable {
 
-        val fetchBooks = Single.create(SingleOnSubscribe<List<Book>> { emitter ->
+        val sync = Completable.create(CompletableOnSubscribe { emitter ->
 
             // try to fetch data, and feed the observable according to the result
             FirebaseDatabase.getInstance()
@@ -127,7 +133,7 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
                         if (null == books) {
                             // as is required in the exercise instructions,
                             // instead of an error, we return the last cached data
-                            emitter.onSuccess(this@AppViewModel.books)
+                            emitter.onComplete()
                             return
                         }
 
@@ -158,19 +164,19 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
 
                         // we can now return the updated book list
 
-                        emitter.onSuccess(this@AppViewModel.books)
+                        emitter.onComplete()
                     }
 
                     override fun onCancelled(@NonNull databaseError: DatabaseError) {
                         Log.i(AppViewModel.TAG, "Firebase error " + databaseError.message)
                         // as is required in the exercise instructions,
                         // instead of an error, we return the last cached data
-                        emitter.onSuccess(this@AppViewModel.books)
+                        emitter.onComplete()
                     }
                 })
         })
 
-        return signIn().flatMap { fetchBooks }
+        return signIn().flatMapCompletable { sync }
     }
 
     companion object {
