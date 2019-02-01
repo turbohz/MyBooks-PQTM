@@ -1,7 +1,6 @@
 package edu.uoc.gruizto.mybooks.model
 
 import android.app.Application
-import android.database.sqlite.SQLiteConstraintException
 import androidx.lifecycle.AndroidViewModel
 import androidx.annotation.NonNull
 import android.util.Log
