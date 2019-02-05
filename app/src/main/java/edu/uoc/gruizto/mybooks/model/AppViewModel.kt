@@ -3,6 +3,7 @@ package edu.uoc.gruizto.mybooks.model
 import android.app.Application
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.iid.FirebaseInstanceId
@@ -17,8 +18,7 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
 
     private val mBookRepository: BookRepository = BookRepository(application)
 
-    val books: List<Book>
-        get() = mBookRepository.all
+    val books: LiveData<List<Book>> = mBookRepository.all
 
     fun insertBook(book: Book) {
         mBookRepository.insert(book)

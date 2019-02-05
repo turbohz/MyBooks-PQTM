@@ -1,6 +1,7 @@
 package edu.uoc.gruizto.mybooks.db
 
 import android.app.Application
+import androidx.lifecycle.LiveData
 
 class BookRepository(application: Application) {
 
@@ -8,7 +9,7 @@ class BookRepository(application: Application) {
 
     private val mBookDao: BookDao = db.bookDao()
 
-    val all: List<Book>
+    val all: LiveData<List<Book>>
         get() = mBookDao.all
 
     fun insert(book: Book) {

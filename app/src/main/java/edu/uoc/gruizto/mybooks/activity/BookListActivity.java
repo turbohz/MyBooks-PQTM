@@ -1,6 +1,8 @@
 package edu.uoc.gruizto.mybooks.activity;
 
 import android.app.NotificationManager;
+
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProviders;
 
 import android.content.ActivityNotFoundException;
@@ -49,12 +51,12 @@ import edu.uoc.gruizto.mybooks.messaging.ChannelBuilder;
 import edu.uoc.gruizto.mybooks.model.AppViewModel;
 import edu.uoc.gruizto.mybooks.remote.Firebase;
 import edu.uoc.gruizto.mybooks.share.ShareIntentBuilder;
+import io.reactivex.CompletableObserver;
 import io.reactivex.SingleObserver;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
-
 public class BookListActivity extends AppCompatActivity {
 
     private static final String TAG = BookListActivity.class.getName();
@@ -106,16 +108,13 @@ public class BookListActivity extends AppCompatActivity {
         mRecyclerView = findViewById(R.id.book_list);
         assert mRecyclerView != null;
 
-        mAdapter = new SimpleItemRecyclerViewAdapter(this, mTwoPane);
+        mAdapter = new SimpleItemRecyclerViewAdapter(this, mTwoPane, mViewModel.getBooks());
         mRecyclerView.setAdapter(mAdapter);
 
         // Configure slide to refresh
 
         mRefresh = findViewById(R.id.book_list_refresh);
-        mRefresh.setOnRefreshListener(() -> {
-            mAdapter.clear();
-            refreshBookList();
-        });
+        mRefresh.setOnRefreshListener(this::refreshBookList);
 
         // Configure drawer
 
@@ -290,15 +289,12 @@ public class BookListActivity extends AppCompatActivity {
 
             default:
                 // this can happen when using the back button
-                // just display what we have
-                displayCachedBookList();
                 break;
         }
     }
 
     private void deleteBook(String position) {
         mViewModel.deleteBook(mViewModel.findBookById(position));
-        mAdapter.setItems(mViewModel.getBooks());
         // in two pane mode, clear screen if deleted book details are being displayed
         if (mTwoPane && position.equals(mCurrentBookId)) {
             clearDetails();
@@ -321,19 +317,11 @@ public class BookListActivity extends AppCompatActivity {
         }
     }
 
-    private void displayCachedBookList() {
-        mAdapter.setItems(mViewModel.getBooks());
-    }
-
-    /**
-     * use Rx Single to get book data asynchronously
-     */
     private void refreshBookList() {
         mViewModel.sync()
-            .toSingle(()->mViewModel.getBooks())
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(new SingleObserver<List<Book>>() {
+            .subscribe(new CompletableObserver() {
                 @Override
                 public void onSubscribe(Disposable d) {
                     // add to disposables, dispose onDestroy activity
@@ -341,9 +329,8 @@ public class BookListActivity extends AppCompatActivity {
                 }
 
                 @Override
-                public void onSuccess(List<Book> books) {
+                public void onComplete() {
                     mRefresh.setRefreshing(false);
-                    mAdapter.setItems(books);
                     clearDetails();
                 }
 
@@ -351,7 +338,8 @@ public class BookListActivity extends AppCompatActivity {
                 public void onError(Throwable e) {
                     mRefresh.setRefreshing(false);
                     Snackbar.make(mRecyclerView, e.getMessage(), Snackbar.LENGTH_LONG).show();
-                }});
+                }
+            });
     }
 
     @Override
@@ -482,10 +470,11 @@ public class BookListActivity extends AppCompatActivity {
             }
         };
 
-        SimpleItemRecyclerViewAdapter(BookListActivity parent, boolean twoPane) {
+        SimpleItemRecyclerViewAdapter(BookListActivity parent, boolean twoPane, LiveData<List<Book>> dataSource) {
             mValues = new ArrayList<Book>();
             mParentActivity = parent;
             mTwoPane = twoPane;
+            dataSource.observe(parent, this::setItems);
         }
 
         @Override
