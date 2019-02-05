@@ -12,7 +12,9 @@ import edu.uoc.gruizto.mybooks.db.BookRepository
 import edu.uoc.gruizto.mybooks.remote.Firebase
 import io.reactivex.Completable
 import io.reactivex.CompletableOnSubscribe
+import io.reactivex.Observable
 import io.reactivex.Single
+import io.reactivex.schedulers.Schedulers
 
 class AppViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -20,8 +22,8 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
 
     val books: LiveData<List<Book>> = mBookRepository.all
 
-    fun insertBook(book: Book) {
-        mBookRepository.insert(book)
+    fun insertBook(book: Book): Completable {
+        return mBookRepository.insert(book)
     }
 
     fun findBookById(id: String): Book? {
@@ -53,31 +55,9 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
      **/
     fun sync(): Completable {
 
-        val sync = { books: List<Book> ->
-            Completable.create { emitter ->
-                val db = mBookRepository.db
-
-                db.beginTransaction()
-
-                try {
-
-                    for (book: Book in books) {
-                        insertBook(book)
-                    }
-
-                    db.setTransactionSuccessful()
-
-                } catch (e: java.lang.Exception) {
-                    Log.e(AppViewModel.TAG, "Exception when inserting book:" + e.message)
-                } finally {
-                    db.endTransaction()
-                }
-
-                emitter.onComplete()
-            }
-        }
-
-        return Firebase.fetch().flatMapCompletable(sync)
+        return Firebase.fetchBooks()
+                .flatMapCompletable { books -> mBookRepository.insertMany(books) }
+                .subscribeOn(Schedulers.single())
     }
 
     companion object {
