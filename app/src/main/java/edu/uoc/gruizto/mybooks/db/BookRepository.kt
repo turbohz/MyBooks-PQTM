@@ -31,8 +31,16 @@ class BookRepository(application: Application) {
         mBookDao.delete(book)
     }
 
-    fun deleteAll() {
-        mBookDao.deleteAll()
+    fun deleteAll(): Completable {
+        // we need to "wrap" the Completable
+        // because the generated code in the DAO
+        // uses the DB before creating the Completable
+        // before we are allowed to schedule the
+        // action to be done in a background thread
+        // TODO: check if the issue is fixed in future versions of Room
+        return Maybe.just("")
+                .flatMapCompletable { _ -> mBookDao.deleteAll() }
+                .subscribeOn(Schedulers.io())
     }
 }
 

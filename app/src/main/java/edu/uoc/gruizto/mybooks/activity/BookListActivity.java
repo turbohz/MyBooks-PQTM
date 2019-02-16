@@ -220,8 +220,10 @@ public class BookListActivity extends AppCompatActivity {
             fab.setOnClickListener(view -> {
                 Snackbar.make(view, "App state reset", Snackbar.LENGTH_LONG);
                 FirebaseAuth.getInstance().signOut();
-                mViewModel.deleteAllBooks();
-                mAdapter.clear();
+                mViewModel.deleteAllBooks()
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .doOnSubscribe(d -> mDisposable.add(d))
+                    .subscribe();
 
                 // if in twoPane view, clear book details fragment
 

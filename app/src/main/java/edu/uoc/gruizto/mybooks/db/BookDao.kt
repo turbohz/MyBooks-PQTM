@@ -23,5 +23,5 @@ interface BookDao {
     fun delete(book: Book)
 
     @Query("DELETE FROM mybooks")
-    fun deleteAll()
+    fun deleteAll(): Completable
 }
