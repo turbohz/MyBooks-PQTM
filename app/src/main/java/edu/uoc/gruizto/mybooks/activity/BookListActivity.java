@@ -19,7 +19,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import android.os.Parcelable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -42,6 +41,7 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import edu.uoc.gruizto.mybooks.BuildConfig;
 import edu.uoc.gruizto.mybooks.R;
@@ -52,6 +52,7 @@ import edu.uoc.gruizto.mybooks.model.AppViewModel;
 import edu.uoc.gruizto.mybooks.remote.Firebase;
 import edu.uoc.gruizto.mybooks.share.ShareIntentBuilder;
 import io.reactivex.CompletableObserver;
+import io.reactivex.Single;
 import io.reactivex.SingleObserver;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -259,32 +260,37 @@ public class BookListActivity extends AppCompatActivity {
             action = "";
         }
 
+        if (action.equals(Intent.ACTION_MAIN)) {
+            // try to do a refresh with data from Firebase
+            // when we first launch the app
+            refreshBookList();
+            return;
+        }
+
         String position = intent.getStringExtra(BookDetailFragment.ARG_ITEM_ID);
+
+        // FIXME: Sometimes position is null (back from details)
+
+        Single<Book> withBook = mViewModel.findBookById(position)
+                .toSingle()
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnSubscribe(mDisposable::add)
+                .doOnError(e -> {
+                    if (e instanceof NoSuchElementException) {
+                        Snackbar.make(mRecyclerView, R.string.message_book_not_found, Snackbar.LENGTH_LONG).show();
+                    } else {
+                        Log.e(TAG, "Could not find book", e);
+                    }
+                });
 
         switch (action) {
 
-            case Intent.ACTION_MAIN:
-                // try to do a refresh with data from Firebase
-                // when we first launch the app
-                refreshBookList();
-                break;
-
             case Intent.ACTION_VIEW:
-                if (null == position || null == mViewModel.findBookById(position)) {
-                    Snackbar.make(mRecyclerView, R.string.message_book_not_found, Snackbar.LENGTH_LONG).show();
-                    return;
-                } else {
-                    showBook(position);
-                }
+                withBook.doOnSuccess(book -> showBook(book.getId())).subscribe();
                 break;
 
             case Intent.ACTION_DELETE:
-                if (null == position || null == mViewModel.findBookById(position)) {
-                    Snackbar.make(mRecyclerView, R.string.message_book_not_found, Snackbar.LENGTH_LONG).show();
-                    return;
-                } else {
-                    deleteBook(position);
-                }
+                withBook.doOnSuccess(this::deleteBook).subscribe();
                 break;
 
             default:
@@ -293,14 +299,18 @@ public class BookListActivity extends AppCompatActivity {
         }
     }
 
-    private void deleteBook(String position) {
-        mViewModel.deleteBook(mViewModel.findBookById(position));
+    private void deleteBook(Book book) {
+
+        String position = book.getId();
+
+        mViewModel.deleteBook(book);
         // in two pane mode, clear screen if deleted book details are being displayed
         if (mTwoPane && position.equals(mCurrentBookId)) {
             clearDetails();
         }
-        //
-        Snackbar.make(mRecyclerView, MessageFormat.format(getString(R.string.message_book_deleted), position), Snackbar.LENGTH_LONG).show();
+
+        String message =  MessageFormat.format(getString(R.string.message_book_deleted), position);
+        Snackbar.make(mRecyclerView, message, Snackbar.LENGTH_LONG).show();
         // dismiss notification: it's easy, since we used the position as notification id
         NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         manager.cancel(Integer.parseInt(position));
@@ -411,36 +421,51 @@ public class BookListActivity extends AppCompatActivity {
         }
     }
 
-    private void showBook(String id) {
-
-        Log.i(TAG, "Showing book "+id);
-
+    private void showBook(Book book) {
         if (mTwoPane) {
-            // create fragment state bundle
+            mCurrentBookId = book.getId();
             Bundle arguments = new Bundle();
-            Parcelable book = mViewModel.findBookById(id);
-
-            if (null != book) {
-
-                mCurrentBookId = id;
-
-                arguments.putParcelable(BookDetailFragment.ARG_BOOK_KEY, book);
-                BookDetailFragment fragment = new BookDetailFragment();
-                fragment.setArguments(arguments);
-                // add it to the activity back stack, using a fragment transaction
-                this.getSupportFragmentManager()
-                        .beginTransaction()
-                        .replace(R.id.item_detail_container, fragment)
-                        .commit();
-            }
-
+            arguments.putParcelable(BookDetailFragment.ARG_BOOK_KEY, book);
+            BookDetailFragment fragment = new BookDetailFragment();
+            fragment.setArguments(arguments);
+            // add it to the activity back stack, using a fragment transaction
+            BookListActivity.this.getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.item_detail_container, fragment)
+                    .commit();
         } else {
 
             Intent intent = new Intent(this, BookDetailActivity.class);
             intent.setAction(Intent.ACTION_VIEW);
-            intent.putExtra(BookDetailFragment.ARG_ITEM_ID, id);
+            intent.putExtra(BookDetailFragment.ARG_ITEM_ID, book.getId());
             this.startActivity(intent);
         }
+    }
+
+
+    private void showBook(String id) {
+        mViewModel.findBookById(id)
+                .toSingle()
+                // NoSuchElementException is emitted when Maybe.empty()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new SingleObserver<Book>() {
+                    @Override
+                    public void onSubscribe(Disposable d) { mDisposable.add(d); }
+
+                    @Override
+                    public void onSuccess(Book book) {
+                        BookListActivity.this.showBook(book);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        if (e instanceof NoSuchElementException) {
+                            Snackbar.make(mRecyclerView, R.string.message_book_not_found, Snackbar.LENGTH_LONG).show();
+                        } else {
+                            Log.e(TAG, "Unexpected error", e);
+                        }
+                    }
+                });
     }
 
     public static class SimpleItemRecyclerViewAdapter

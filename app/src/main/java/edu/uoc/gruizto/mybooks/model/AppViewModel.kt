@@ -14,6 +14,7 @@ import io.reactivex.Completable
 import io.reactivex.CompletableOnSubscribe
 import io.reactivex.Observable
 import io.reactivex.Single
+import io.reactivex.Maybe
 import io.reactivex.schedulers.Schedulers
 
 class AppViewModel(application: Application) : AndroidViewModel(application) {
@@ -26,7 +27,7 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
         return mBookRepository.insert(book)
     }
 
-    fun findBookById(id: String): Book? {
+    fun findBookById(id: String): Maybe<Book> {
         return mBookRepository.findById(id)
     }
 

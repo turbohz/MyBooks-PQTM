@@ -3,6 +3,7 @@ package edu.uoc.gruizto.mybooks.db
 import android.app.Application
 import androidx.lifecycle.LiveData
 import io.reactivex.Completable
+import io.reactivex.Maybe
 import io.reactivex.schedulers.Schedulers
 
 class BookRepository(application: Application) {
@@ -14,6 +15,10 @@ class BookRepository(application: Application) {
     val all: LiveData<List<Book>>
         get() = mBookDao.all
 
+    fun findById(id: String): Maybe<Book> {
+        return mBookDao.findById(id).subscribeOn(Schedulers.io())
+    }
+
     fun insert(book: Book): Completable {
         return mBookDao.insert(book).subscribeOn(Schedulers.io())
     }
@@ -24,10 +29,6 @@ class BookRepository(application: Application) {
 
     fun delete(book: Book) {
         mBookDao.delete(book)
-    }
-
-    fun findById(id: String): Book? {
-        return mBookDao.findById(id)
     }
 
     fun deleteAll() {
