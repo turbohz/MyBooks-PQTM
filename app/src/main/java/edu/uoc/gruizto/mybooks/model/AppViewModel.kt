@@ -1,19 +1,12 @@
 package edu.uoc.gruizto.mybooks.model
 
 import android.app.Application
-import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.iid.FirebaseInstanceId
 import edu.uoc.gruizto.mybooks.db.Book
 import edu.uoc.gruizto.mybooks.db.BookRepository
 import edu.uoc.gruizto.mybooks.remote.Firebase
 import io.reactivex.Completable
-import io.reactivex.CompletableOnSubscribe
-import io.reactivex.Observable
-import io.reactivex.Single
 import io.reactivex.Maybe
 import io.reactivex.schedulers.Schedulers
 
