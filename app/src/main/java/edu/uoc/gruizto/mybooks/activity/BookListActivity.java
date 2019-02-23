@@ -2,7 +2,6 @@ package edu.uoc.gruizto.mybooks.activity;
 
 import android.app.NotificationManager;
 
-import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProviders;
 
 import android.content.ActivityNotFoundException;
@@ -37,6 +36,8 @@ import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
+import org.reactivestreams.Subscription;
+
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -53,11 +54,13 @@ import edu.uoc.gruizto.mybooks.remote.Firebase;
 import edu.uoc.gruizto.mybooks.share.ShareIntentBuilder;
 import io.reactivex.Completable;
 import io.reactivex.CompletableObserver;
+import io.reactivex.Flowable;
 import io.reactivex.Single;
 import io.reactivex.SingleObserver;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 public class BookListActivity extends AppCompatActivity {
 
@@ -365,6 +368,7 @@ public class BookListActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
+        mAdapter.destroy();
         super.onDestroy();
 
         if(null != mDisposable && !mDisposable.isDisposed()) {
@@ -498,6 +502,7 @@ public class BookListActivity extends AppCompatActivity {
         private final BookListActivity mParentActivity;
         private final List<Book> mValues;
         private final boolean mTwoPane;
+        private Subscription mBookSubscription;
         private final View.OnClickListener mOnClickListener = new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -506,11 +511,18 @@ public class BookListActivity extends AppCompatActivity {
             }
         };
 
-        SimpleItemRecyclerViewAdapter(BookListActivity parent, boolean twoPane, LiveData<List<Book>> dataSource) {
+        SimpleItemRecyclerViewAdapter(BookListActivity parent, boolean twoPane, Flowable<List<Book>> dataSource) {
             mValues = new ArrayList<Book>();
             mParentActivity = parent;
             mTwoPane = twoPane;
-            dataSource.observe(parent, this::setItems);
+            dataSource
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .doOnSubscribe(s -> {
+                        mBookSubscription = s;
+                        mBookSubscription.request(1);
+                    })
+                    .doOnNext(this::setItems)
+                    .subscribe();
         }
 
         @Override
@@ -563,6 +575,10 @@ public class BookListActivity extends AppCompatActivity {
             mValues.clear();
             mValues.addAll(items);
             notifyDataSetChanged();
+        }
+
+        public void destroy() {
+            mBookSubscription.cancel();
         }
     }
 }

@@ -2,11 +2,11 @@ package edu.uoc.gruizto.mybooks.model
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
 import edu.uoc.gruizto.mybooks.db.Book
 import edu.uoc.gruizto.mybooks.db.BookRepository
 import edu.uoc.gruizto.mybooks.remote.Firebase
 import io.reactivex.Completable
+import io.reactivex.Flowable
 import io.reactivex.Maybe
 import io.reactivex.schedulers.Schedulers
 
@@ -14,7 +14,7 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
 
     private val mBookRepository: BookRepository = BookRepository(application)
 
-    val books: LiveData<List<Book>> = mBookRepository.all
+    val books: Flowable<List<Book>> = mBookRepository.all
 
     fun insertBook(book: Book): Completable {
         return mBookRepository.insert(book)

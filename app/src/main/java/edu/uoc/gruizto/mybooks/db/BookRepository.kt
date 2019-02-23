@@ -1,8 +1,8 @@
 package edu.uoc.gruizto.mybooks.db
 
 import android.app.Application
-import androidx.lifecycle.LiveData
 import io.reactivex.Completable
+import io.reactivex.Flowable
 import io.reactivex.Maybe
 import io.reactivex.schedulers.Schedulers
 
@@ -12,8 +12,8 @@ class BookRepository(application: Application) {
 
     private val mBookDao: BookDao = db.bookDao()
 
-    val all: LiveData<List<Book>>
-        get() = mBookDao.all
+    val all: Flowable<List<Book>>
+        get() = mBookDao.all.subscribeOn(Schedulers.io())
 
     fun findById(id: String): Maybe<Book> {
         return mBookDao.findById(id).subscribeOn(Schedulers.io())

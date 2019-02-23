@@ -1,14 +1,14 @@
 package edu.uoc.gruizto.mybooks.db
 
-import androidx.lifecycle.LiveData
 import androidx.room.*
 import io.reactivex.Completable
+import io.reactivex.Flowable
 import io.reactivex.Maybe
 
 @Dao
 interface BookDao {
     @get:Query("SELECT * FROM mybooks ORDER BY id ASC")
-    val all: LiveData<List<Book>>
+    val all: Flowable<List<Book>>
 
     @Query("SELECT * FROM mybooks WHERE id=:id LIMIT 1")
     fun findById(id: String): Maybe<Book>
