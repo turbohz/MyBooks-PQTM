@@ -2,11 +2,23 @@
 
 ## The project
 
-This project was developed during the duration of the course. The specification was provided to us.
+This project was developed during the duration of the course. 
 
-** This is not what I would consider a quality nor production ready codebase. **
+The specification was provided to us.
 
-I tried different programming techniques (also languages), to experiment and acquire practice.
+> This is not what I would consider a quality nor production ready codebase.
+
+I tried diferent programming techniques (also languages), to experiment and acquire practice.
+
+## Screenshots
+
+![list](https://gitlab.com/gruizto/pqtm-mybooks/raw/master/screenshots/screenshot-book-list.png)
+
+![detail](https://gitlab.com/gruizto/pqtm-mybooks/raw/master/screenshots/screenshot-book-detail.png)
+
+![notifications](https://gitlab.com/gruizto/pqtm-mybooks/raw/master/screenshots/screenshoot-notification.png)
+
+![sidebar](https://gitlab.com/gruizto/pqtm-mybooks/raw/master/screenshots/screenshot-sidebar.png)
 
 ## Contributing
 
