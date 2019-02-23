@@ -21,10 +21,11 @@ abstract class AppDatabase : RoomDatabase() {
                 }
 
         private fun buildDatabase(context: Context) =
-                Room.databaseBuilder(context.applicationContext,
-                        AppDatabase::class.java, "mybooks")
-                        // FIXME: use LiveData and update RecyclerViewAdapter to make db access async
-                        .allowMainThreadQueries()
-                        .build()
+            Room
+                    .databaseBuilder(
+                        context.applicationContext,
+                        AppDatabase::class.java, "mybooks"
+                    )
+                    .build()
     }
 }
