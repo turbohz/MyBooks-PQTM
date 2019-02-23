@@ -18,9 +18,9 @@ interface BookDao {
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     fun insertMany(books: List<Book>): Completable
-
+    
     @Delete
-    fun delete(book: Book)
+    fun delete(book: Book): Completable
 
     @Query("DELETE FROM mybooks")
     fun deleteAll(): Completable

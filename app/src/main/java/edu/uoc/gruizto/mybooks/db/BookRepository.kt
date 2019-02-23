@@ -27,8 +27,8 @@ class BookRepository(application: Application) {
         return mBookDao.insertMany(books).subscribeOn(Schedulers.io())
     }
 
-    fun delete(book: Book) {
-        mBookDao.delete(book)
+    fun delete(book: Book) : Completable {
+        return mBookDao.delete(book).subscribeOn(Schedulers.io())
     }
 
     fun deleteAll(): Completable {

@@ -28,8 +28,8 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
         return mBookRepository.deleteAll()
     }
 
-    fun deleteBook(book: Book) {
-        mBookRepository.delete(book)
+    fun deleteBook(book: Book): Completable {
+        return mBookRepository.delete(book)
     }
 
     /**

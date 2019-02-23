@@ -51,6 +51,7 @@ import edu.uoc.gruizto.mybooks.messaging.ChannelBuilder;
 import edu.uoc.gruizto.mybooks.model.AppViewModel;
 import edu.uoc.gruizto.mybooks.remote.Firebase;
 import edu.uoc.gruizto.mybooks.share.ShareIntentBuilder;
+import io.reactivex.Completable;
 import io.reactivex.CompletableObserver;
 import io.reactivex.Single;
 import io.reactivex.SingleObserver;
@@ -288,34 +289,37 @@ public class BookListActivity extends AppCompatActivity {
         switch (action) {
 
             case Intent.ACTION_VIEW:
-                withBook.doOnSuccess(book -> showBook(book.getId())).subscribe();
+                withBook
+                        .doOnSuccess(book -> showBook(book.getId()))
+                        .subscribe();
                 break;
 
             case Intent.ACTION_DELETE:
-                withBook.doOnSuccess(this::deleteBook).subscribe();
+                withBook
+                        .flatMapCompletable(this::deleteBook)
+                        .subscribe();
                 break;
-
-            default:
-                // this can happen when using the back button
-                break;
+        default:
+            // this can happen when using the back button
+            break;
         }
     }
 
-    private void deleteBook(Book book) {
+    private Completable deleteBook(Book book) {
 
-        String position = book.getId();
+        return mViewModel.deleteBook(book).doOnComplete(() -> {
+            String position = book.getId();
+            // in two pane mode, clear screen if deleted book details are being displayed
+            if (mTwoPane && position.equals(mCurrentBookId)) {
+                clearDetails();
+            }
 
-        mViewModel.deleteBook(book);
-        // in two pane mode, clear screen if deleted book details are being displayed
-        if (mTwoPane && position.equals(mCurrentBookId)) {
-            clearDetails();
-        }
-
-        String message =  MessageFormat.format(getString(R.string.message_book_deleted), position);
-        Snackbar.make(mRecyclerView, message, Snackbar.LENGTH_LONG).show();
-        // dismiss notification: it's easy, since we used the position as notification id
-        NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        manager.cancel(Integer.parseInt(position));
+            String message =  MessageFormat.format(getString(R.string.message_book_deleted), position);
+            Snackbar.make(mRecyclerView, message, Snackbar.LENGTH_LONG).show();
+            // dismiss notification: it's easy, since we used the position as notification id
+            NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+            manager.cancel(Integer.parseInt(position));
+        });
     }
 
     /**
