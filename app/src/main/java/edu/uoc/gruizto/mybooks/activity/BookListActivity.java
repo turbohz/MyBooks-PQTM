@@ -272,6 +272,11 @@ public class BookListActivity extends AppCompatActivity {
 
         String position = intent.getStringExtra(BookDetailFragment.ARG_ITEM_ID);
 
+        if (position == null) {
+            // no need to do anything
+            return;
+        }
+
         // FIXME: Sometimes position is null (back from details)
 
         Single<Book> withBook = mViewModel.findBookById(position)
