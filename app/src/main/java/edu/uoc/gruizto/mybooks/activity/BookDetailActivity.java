@@ -9,7 +9,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.ActionBar;
 import androidx.core.app.NavUtils;
 
-import android.os.Parcelable;
 import android.view.MenuItem;
 import android.view.View;
 import android.webkit.WebView;
@@ -23,9 +22,14 @@ import java.io.File;
 import androidx.core.content.FileProvider;
 import androidx.lifecycle.ViewModelProviders;
 import edu.uoc.gruizto.mybooks.R;
+import edu.uoc.gruizto.mybooks.db.Book;
 import edu.uoc.gruizto.mybooks.fragment.BookDetailFragment;
 import edu.uoc.gruizto.mybooks.model.AppViewModel;
 import edu.uoc.gruizto.mybooks.storage.StorageHelper;
+import io.reactivex.MaybeObserver;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
 
 /**
  * An activity representing a single Item detail screen. This
@@ -36,6 +40,9 @@ import edu.uoc.gruizto.mybooks.storage.StorageHelper;
 public class BookDetailActivity extends AppCompatActivity {
 
     private static final String TAG = BookListActivity.class.getName();
+
+    private AppViewModel mViewModel;
+    private CompositeDisposable mDisposable;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +57,13 @@ public class BookDetailActivity extends AppCompatActivity {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
 
+        mViewModel = ViewModelProviders.of(this).get(AppViewModel.class);
+
+        // Disposable is needed to clean up the Rx entities
+        // used in the asynchronous refresh of the view model
+
+        mDisposable = new CompositeDisposable();
+
         // savedInstanceState is non-null when there is fragment state
         // saved from previous configurations of this activity
         // (e.g. when rotating the screen from portrait to landscape).
@@ -61,23 +75,39 @@ public class BookDetailActivity extends AppCompatActivity {
         //
         if (savedInstanceState == null) {
 
-            AppViewModel model = ViewModelProviders.of(this).get(AppViewModel.class);
             String bookId = getIntent().getStringExtra(BookDetailFragment.ARG_ITEM_ID);
-            Parcelable book = model.findBookById(bookId);
 
-            if (null != book) {
-                // create fragment state bundle
-                Bundle arguments = new Bundle();
-                arguments.putParcelable(BookDetailFragment.ARG_BOOK_KEY, book);
-                // create the detail fragment, and provide it with the Bundle
-                BookDetailFragment fragment = new BookDetailFragment();
-                fragment.setArguments(arguments);
-                // add it to the activity, using a fragment manager transaction
-                getSupportFragmentManager()
-                        .beginTransaction()
-                        .add(R.id.item_detail_container, fragment)
-                        .commit();
-            }
+            mViewModel.findBookById(bookId)
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new MaybeObserver<Book>() {
+                        @Override
+                        public void onSubscribe(Disposable d) { mDisposable.add(d); }
+
+                        @Override
+                        public void onSuccess(Book book) {
+                            // create fragment state bundle
+                            Bundle arguments = new Bundle();
+                            arguments.putParcelable(BookDetailFragment.ARG_BOOK_KEY, book);
+                            // create the detail fragment, and provide it with the Bundle
+                            BookDetailFragment fragment = new BookDetailFragment();
+                            fragment.setArguments(arguments);
+                            // add it to the activity back stack, using a fragment transaction
+                            BookDetailActivity.this.getSupportFragmentManager()
+                                    .beginTransaction()
+                                    .replace(R.id.item_detail_container, fragment)
+                                    .commit();
+                        }
+
+                        @Override
+                        public void onError(Throwable e) {
+
+                        }
+
+                        @Override
+                        public void onComplete() {
+
+                        }
+                    });
         }
 
         // setup web view
@@ -153,5 +183,14 @@ public class BookDetailActivity extends AppCompatActivity {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        if(null != mDisposable && !mDisposable.isDisposed()) {
+            mDisposable.dispose();
+        }
     }
 }

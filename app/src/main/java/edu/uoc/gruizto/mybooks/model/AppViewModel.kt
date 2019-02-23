@@ -1,39 +1,35 @@
 package edu.uoc.gruizto.mybooks.model
 
 import android.app.Application
-import android.util.Log
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.iid.FirebaseInstanceId
 import edu.uoc.gruizto.mybooks.db.Book
 import edu.uoc.gruizto.mybooks.db.BookRepository
 import edu.uoc.gruizto.mybooks.remote.Firebase
 import io.reactivex.Completable
-import io.reactivex.CompletableOnSubscribe
-import io.reactivex.Single
+import io.reactivex.Flowable
+import io.reactivex.Maybe
+import io.reactivex.schedulers.Schedulers
 
 class AppViewModel(application: Application) : AndroidViewModel(application) {
 
     private val mBookRepository: BookRepository = BookRepository(application)
 
-    val books: LiveData<List<Book>> = mBookRepository.all
+    val books: Flowable<List<Book>> = mBookRepository.all
 
-    fun insertBook(book: Book) {
-        mBookRepository.insert(book)
+    fun insertBook(book: Book): Completable {
+        return mBookRepository.insert(book)
     }
 
-    fun findBookById(id: String): Book? {
+    fun findBookById(id: String): Maybe<Book> {
         return mBookRepository.findById(id)
     }
 
-    fun deleteAllBooks() {
-        mBookRepository.deleteAll()
+    fun deleteAllBooks(): Completable {
+        return mBookRepository.deleteAll()
     }
 
-    fun deleteBook(book: Book) {
-        mBookRepository.delete(book)
+    fun deleteBook(book: Book): Completable {
+        return mBookRepository.delete(book)
     }
 
     /**
@@ -53,31 +49,9 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
      **/
     fun sync(): Completable {
 
-        val sync = { books: List<Book> ->
-            Completable.create { emitter ->
-                val db = mBookRepository.db
-
-                db.beginTransaction()
-
-                try {
-
-                    for (book: Book in books) {
-                        insertBook(book)
-                    }
-
-                    db.setTransactionSuccessful()
-
-                } catch (e: java.lang.Exception) {
-                    Log.e(AppViewModel.TAG, "Exception when inserting book:" + e.message)
-                } finally {
-                    db.endTransaction()
-                }
-
-                emitter.onComplete()
-            }
-        }
-
-        return Firebase.fetch().flatMapCompletable(sync)
+        return Firebase.fetchBooks()
+                .flatMapCompletable { books -> mBookRepository.insertMany(books) }
+                .subscribeOn(Schedulers.single())
     }
 
     companion object {

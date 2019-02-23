@@ -63,7 +63,7 @@ class Firebase {
      *
      * @return a future list of books
      **/
-    fun fetch(): Single<List<Book>> {
+    fun fetchBooks(): Single<List<Book>> {
 
         val fetch = Single.create { emitter: SingleEmitter<List<Book>> ->
             FirebaseDatabase.getInstance()
@@ -124,7 +124,7 @@ class Firebase {
         private val TAG = Firebase::class.java.name
 
         private val instance = Firebase()
-        fun fetch() = instance.fetch()
+        fun fetchBooks() = instance.fetchBooks()
         fun getFirebaseInstanceId() = instance.firebaseInstanceId
     }
 }
