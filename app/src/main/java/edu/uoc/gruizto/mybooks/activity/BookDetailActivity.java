@@ -189,7 +189,7 @@ public class BookDetailActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
 
-        if(null != mDisposable && !mDisposable.isDisposed()) {
+        if(mDisposable != null && !mDisposable.isDisposed()) {
             mDisposable.dispose();
         }
     }

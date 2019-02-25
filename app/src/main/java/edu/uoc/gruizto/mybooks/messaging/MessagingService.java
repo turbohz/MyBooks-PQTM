@@ -51,7 +51,7 @@ public class MessagingService extends FirebaseMessagingService {
 
         // make bookPosition always a string
 
-        bookPosition = (null == bookPosition) ? "":bookPosition;
+        bookPosition = (bookPosition == null) ? "":bookPosition;
 
         // Check if message contains a notification payload
 

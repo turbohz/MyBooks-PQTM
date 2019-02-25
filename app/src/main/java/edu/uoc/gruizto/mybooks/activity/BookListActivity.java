@@ -248,7 +248,7 @@ public class BookListActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
 
-        if (null != intent) {
+        if (intent != null) {
             onNewIntent(intent);
         }
     }
@@ -262,7 +262,7 @@ public class BookListActivity extends AppCompatActivity {
 
         String action = intent.getAction();
 
-        if(null == action ){
+        if(action == null){
             action = "";
         }
 
@@ -336,7 +336,7 @@ public class BookListActivity extends AppCompatActivity {
      */
     private void clearDetails() {
         ViewGroup details = findViewById(R.id.item_detail_container);
-        if (null != details) {
+        if (details != null) {
             details.removeAllViews();
         }
     }
@@ -371,7 +371,7 @@ public class BookListActivity extends AppCompatActivity {
         mAdapter.destroy();
         super.onDestroy();
 
-        if(null != mDisposable && !mDisposable.isDisposed()) {
+        if(mDisposable != null && !mDisposable.isDisposed()) {
             mDisposable.dispose();
         }
     }
