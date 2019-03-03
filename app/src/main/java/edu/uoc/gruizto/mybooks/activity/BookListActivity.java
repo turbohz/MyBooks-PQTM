@@ -130,6 +130,8 @@ public class BookListActivity extends AppCompatActivity {
 
         // Configure drawer
 
+        final ShareDrawerBuilder builder = new ShareDrawerBuilder(this);
+
         //initialize and create the image loader logic
 
         DrawerImageLoader.init(new AbstractDrawerImageLoader() {
@@ -153,8 +155,7 @@ public class BookListActivity extends AppCompatActivity {
 
         // create the drawer and remember the `mDrawer` result
 
-        mDrawer = new DrawerBuilder()
-            .withActivity(this)
+        mDrawer = builder.getBuilder()
             .withAccountHeader(header)
             .withToolbar(toolbar)
             .addDrawerItems(

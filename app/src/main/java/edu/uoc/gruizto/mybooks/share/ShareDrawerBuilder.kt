@@ -1,10 +1,19 @@
 package edu.uoc.gruizto.mybooks.share
 
+import android.app.Activity
 import androidx.annotation.StringRes
+import com.mikepenz.materialdrawer.Drawer
+import com.mikepenz.materialdrawer.DrawerBuilder
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem
 import com.mikepenz.materialdrawer.model.ProfileDrawerItem
 
-class ShareDrawerBuilder {
+class ShareDrawerBuilder(activity: Activity) {
+
+    val builder: DrawerBuilder = DrawerBuilder().withActivity(activity)
+
+    fun build():Drawer {
+        return builder.build()
+    }
 
     companion object {
 
