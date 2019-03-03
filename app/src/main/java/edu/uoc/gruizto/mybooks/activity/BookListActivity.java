@@ -51,6 +51,7 @@ import edu.uoc.gruizto.mybooks.fragment.BookDetailFragment;
 import edu.uoc.gruizto.mybooks.messaging.ChannelBuilder;
 import edu.uoc.gruizto.mybooks.model.AppViewModel;
 import edu.uoc.gruizto.mybooks.remote.Firebase;
+import edu.uoc.gruizto.mybooks.share.ShareDrawerBuilder;
 import edu.uoc.gruizto.mybooks.share.ShareIntentBuilder;
 import io.reactivex.Completable;
 import io.reactivex.CompletableObserver;
@@ -134,10 +135,6 @@ public class BookListActivity extends AppCompatActivity {
             )
             .build();
 
-        PrimaryDrawerItem item1 = new PrimaryDrawerItem().withName(R.string.drawer_item_share_with_app);
-        PrimaryDrawerItem item2 = new PrimaryDrawerItem().withName(R.string.drawer_item_copy_to_clipboard);
-        PrimaryDrawerItem item3 = new PrimaryDrawerItem().withName(R.string.drawer_item_share_to_whatsapp);
-
         // create the drawer and remember the `mDrawer` result
 
         mDrawer = new DrawerBuilder()
@@ -145,11 +142,9 @@ public class BookListActivity extends AppCompatActivity {
             .withAccountHeader(header)
             .withToolbar(toolbar)
             .addDrawerItems(
-                    // items are not sections that remain selected, they're actions
-                    // withSelectable(false) keeps them "unselected"
-                    item1.withIdentifier(1).withSelectable(false),
-                    item2.withIdentifier(2).withSelectable(false),
-                    item3.withIdentifier(3).withSelectable(false)
+                    ShareDrawerBuilder.Companion.createItem(1, R.string.drawer_item_share_with_app),
+                    ShareDrawerBuilder.Companion.createItem(2, R.string.drawer_item_copy_to_clipboard),
+                    ShareDrawerBuilder.Companion.createItem(3, R.string.drawer_item_share_to_whatsapp)
             )
             .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
                 @Override
