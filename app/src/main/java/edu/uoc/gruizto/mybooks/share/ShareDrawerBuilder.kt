@@ -1,15 +1,33 @@
 package edu.uoc.gruizto.mybooks.share
 
 import android.app.Activity
+import android.graphics.drawable.Drawable
+import android.net.Uri
+import android.widget.ImageView
 import androidx.annotation.StringRes
 import com.mikepenz.materialdrawer.Drawer
 import com.mikepenz.materialdrawer.DrawerBuilder
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem
 import com.mikepenz.materialdrawer.model.ProfileDrawerItem
+import com.mikepenz.materialdrawer.util.AbstractDrawerImageLoader
+import com.mikepenz.materialdrawer.util.DrawerImageLoader
+import com.squareup.picasso.Picasso
 
 class ShareDrawerBuilder(activity: Activity) {
 
     val builder: DrawerBuilder = DrawerBuilder().withActivity(activity)
+
+    init {
+        DrawerImageLoader.init(object : AbstractDrawerImageLoader() {
+            override fun set(imageView: ImageView?, uri: Uri?, placeholder: Drawable?) {
+                Picasso.get().load(uri).placeholder(placeholder!!).into(imageView)
+            }
+
+            override fun cancel(imageView: ImageView?) {
+                Picasso.get().cancelRequest(imageView!!)
+            }
+        })
+    }
 
     fun build():Drawer {
         return builder.build()
