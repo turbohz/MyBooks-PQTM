@@ -127,12 +127,7 @@ public class BookListActivity extends AppCompatActivity {
         // Create the AccountHeader
         AccountHeader header = new AccountHeaderBuilder()
             .withActivity(this)
-            .addProfiles(
-                    new ProfileDrawerItem()
-                        .withName("Gerard Ruiz")
-                        .withEmail("gruizto@uoc.edu")
-                        .withIcon(getResources().getDrawable(R.drawable.portrait))
-            )
+            .addProfiles(ShareDrawerBuilder.Companion.getProfile())
             .build();
 
         // create the drawer and remember the `mDrawer` result
