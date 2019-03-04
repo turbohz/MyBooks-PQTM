@@ -51,6 +51,7 @@ class ShareDrawerBuilder(activity: Activity) {
 
         val header: AccountHeader = AccountHeaderBuilder()
                 .withActivity(activity)
+                .withSelectionListEnabledForSingleProfile(false)
                 .addProfiles(profile)
                 .build()
 
