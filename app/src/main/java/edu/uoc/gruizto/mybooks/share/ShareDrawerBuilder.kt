@@ -4,6 +4,7 @@ import android.app.Activity
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.widget.ImageView
+import androidx.appcompat.widget.Toolbar
 import androidx.annotation.StringRes
 import com.mikepenz.materialdrawer.AccountHeader
 import com.mikepenz.materialdrawer.AccountHeaderBuilder
@@ -58,6 +59,10 @@ class ShareDrawerBuilder(activity: Activity) {
 
     fun build():Drawer {
         return builder.build()
+    }
+
+    constructor(activity: Activity, toolbar: Toolbar) : this(activity) {
+        builder.withToolbar(toolbar)
     }
 
     companion object {

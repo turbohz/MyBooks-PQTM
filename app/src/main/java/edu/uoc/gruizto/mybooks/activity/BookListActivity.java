@@ -121,12 +121,11 @@ public class BookListActivity extends AppCompatActivity {
 
         // Configure drawer
 
-        final ShareDrawerBuilder builder = new ShareDrawerBuilder(this);
+        final ShareDrawerBuilder builder = new ShareDrawerBuilder(this, toolbar);
 
         // create the drawer and remember the `mDrawer` result
 
         mDrawer = builder.getBuilder()
-            .withToolbar(toolbar)
             .addDrawerItems(
                     ShareDrawerBuilder.Companion.createItem(1, R.string.drawer_item_share_with_app),
                     ShareDrawerBuilder.Companion.createItem(2, R.string.drawer_item_copy_to_clipboard),
