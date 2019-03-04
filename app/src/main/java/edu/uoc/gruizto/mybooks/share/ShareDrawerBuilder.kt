@@ -15,6 +15,7 @@ import com.mikepenz.materialdrawer.model.ProfileDrawerItem
 import com.mikepenz.materialdrawer.util.AbstractDrawerImageLoader
 import com.mikepenz.materialdrawer.util.DrawerImageLoader
 import com.squareup.picasso.Picasso
+import edu.uoc.gruizto.mybooks.R
 
 private const val PROFILE_PICTURE_URL = "https://lh3.googleusercontent.com/-xNpsxtjuGhw/W64vqH_Zk3I/AAAAAAAAACk/4cS2_mewPEcE0B1_894bisk65mLnyqFlQCEwYBhgL/portrait-face2.png"
 private const val PROFILE_NAME = "Gerard Ruiz"
@@ -56,6 +57,15 @@ class ShareDrawerBuilder(activity: Activity) {
         builder.withAccountHeader(header)
     }
 
+    // initialise Drawer options
+
+    init {
+        builder.addDrawerItems(
+            createItem(1, R.string.drawer_item_share_with_app),
+            createItem(2, R.string.drawer_item_copy_to_clipboard),
+            createItem(3, R.string.drawer_item_share_to_whatsapp)
+        )
+    }
 
     fun build():Drawer {
         return builder.build()

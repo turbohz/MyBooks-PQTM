@@ -126,11 +126,6 @@ public class BookListActivity extends AppCompatActivity {
         // create the drawer and remember the `mDrawer` result
 
         mDrawer = builder.getBuilder()
-            .addDrawerItems(
-                    ShareDrawerBuilder.Companion.createItem(1, R.string.drawer_item_share_with_app),
-                    ShareDrawerBuilder.Companion.createItem(2, R.string.drawer_item_copy_to_clipboard),
-                    ShareDrawerBuilder.Companion.createItem(3, R.string.drawer_item_share_to_whatsapp)
-            )
             .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
                 @Override
                 public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
