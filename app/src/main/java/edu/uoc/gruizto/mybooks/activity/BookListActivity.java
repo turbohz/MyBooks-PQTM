@@ -123,19 +123,9 @@ public class BookListActivity extends AppCompatActivity {
 
         final ShareDrawerBuilder builder = new ShareDrawerBuilder(this);
 
-        //initialize and create the image loader logic
-
-        // Create the AccountHeader
-
-        AccountHeader header = new AccountHeaderBuilder()
-            .withActivity(this)
-            .addProfiles(ShareDrawerBuilder.Companion.getProfile())
-            .build();
-
         // create the drawer and remember the `mDrawer` result
 
         mDrawer = builder.getBuilder()
-            .withAccountHeader(header)
             .withToolbar(toolbar)
             .addDrawerItems(
                     ShareDrawerBuilder.Companion.createItem(1, R.string.drawer_item_share_with_app),
