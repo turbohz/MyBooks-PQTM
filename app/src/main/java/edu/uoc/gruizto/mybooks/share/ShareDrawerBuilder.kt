@@ -21,14 +21,23 @@ private const val PROFILE_PICTURE_URL = "https://lh3.googleusercontent.com/-xNps
 private const val PROFILE_NAME = "Gerard Ruiz"
 private const val PROFILE_EMAIL = "gruizto@uoc.edu"
 
-class ShareDrawerBuilder(activity: Activity) {
+fun drawerItem (id:Long, @StringRes label:Int) :PrimaryDrawerItem =
+        PrimaryDrawerItem()
+                .withIdentifier(id)
+                .withName(label)
+                .withSelectable(false)
 
-    val builder: DrawerBuilder = DrawerBuilder().withActivity(activity)
+class ShareDrawerBuilder(activity: Activity, toolbar: Toolbar?) {
+
+    private val builder: DrawerBuilder = DrawerBuilder().withActivity(activity)
+
+    constructor(activity: Activity) : this(activity,null)
 
     // initialise DrawerImageLoader to use Picasso
     // it is used to download the Profile photo
 
     init {
+
         DrawerImageLoader.init(object : AbstractDrawerImageLoader() {
             override fun set(imageView: ImageView?, uri: Uri?, placeholder: Drawable?) {
                 Picasso.get().load(uri).placeholder(placeholder!!).into(imageView)
@@ -38,11 +47,8 @@ class ShareDrawerBuilder(activity: Activity) {
                 Picasso.get().cancelRequest(imageView!!)
             }
         })
-    }
 
-    // Create the AccountHeader
-
-    init {
+        // Create the AccountHeader
 
         val profile: ProfileDrawerItem = ProfileDrawerItem()
                 .withName(PROFILE_NAME)
@@ -56,36 +62,21 @@ class ShareDrawerBuilder(activity: Activity) {
                 .build()
 
         builder.withAccountHeader(header)
-    }
 
-    // initialise Drawer options
+        // initialise Drawer options
 
-    init {
         builder.addDrawerItems(
-            createItem(1, R.string.drawer_item_share_with_app),
-            createItem(2, R.string.drawer_item_copy_to_clipboard),
-            createItem(3, R.string.drawer_item_share_to_whatsapp)
+            drawerItem(1, R.string.drawer_item_share_with_app),
+            drawerItem(2, R.string.drawer_item_copy_to_clipboard),
+            drawerItem(3, R.string.drawer_item_share_to_whatsapp)
         )
+
+        // attach to toolbar if provided
+
+        toolbar?.let { builder.withToolbar(it) }
     }
 
     fun build():Drawer {
         return builder.build()
-    }
-
-    constructor(activity: Activity, toolbar: Toolbar) : this(activity) {
-        builder.withToolbar(toolbar)
-    }
-
-    companion object {
-
-        fun createItem (id:Long, @StringRes label:Int) :PrimaryDrawerItem =
-            PrimaryDrawerItem()
-                    .withIdentifier(id)
-                    .withName(label)
-                    .withSelectable(false)
-
-
-
-
     }
 }
