@@ -121,72 +121,65 @@ public class BookListActivity extends AppCompatActivity {
 
         // Configure drawer
 
-        final ShareDrawerBuilder builder = new ShareDrawerBuilder(this, toolbar);
+        final Drawer mDrawer = new ShareDrawerBuilder(this, toolbar).build();
 
-        // create the drawer and remember the `mDrawer` result
+        mDrawer.setOnDrawerItemClickListener((view, position, drawerItem) -> {
 
-        mDrawer = builder.getBuilder()
-            .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
-                @Override
-                public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
+            ShareIntentBuilder builder;
+            Intent intent = null;
+            Context context = BookListActivity.this;
+            String shareText = context.getResources().getString(R.string.app_description);
 
-                    ShareIntentBuilder builder;
-                    Intent intent = null;
-                    Context context = BookListActivity.this;
-                    String shareText = context.getResources().getString(R.string.app_description);
+            switch (position) {
+                case 1: // Generic share
 
-                    switch (position) {
-                        case 1: // Generic share
+                    builder = new ShareIntentBuilder(context);
+                    intent = builder
+                            .setText(shareText)
+                            .setImage(R.raw.icon)
+                            .build();
 
-                            builder = new ShareIntentBuilder(context);
-                            intent = builder
-                                    .setText(shareText)
-                                    .setImage(R.raw.icon)
-                                    .build();
+                    startActivity(Intent.createChooser(intent, getResources().getText(R.string.send_to)));
+                    break;
 
-                            startActivity(Intent.createChooser(intent, getResources().getText(R.string.send_to)));
-                            break;
+                case 2: // copy to clipboard
 
-                        case 2: // copy to clipboard
+                    String label = context.getResources().getString(R.string.app_name);
+                    ClipboardManager clipboardManager = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
+                    clipboardManager.setPrimaryClip(ClipData.newPlainText(label, shareText));
 
-                            String label = context.getResources().getString(R.string.app_name);
-                            ClipboardManager clipboardManager = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
-                            clipboardManager.setPrimaryClip(ClipData.newPlainText(label, shareText));
+                    // notify the user
 
-                            // notify the user
+                    Toast.makeText(context, getResources().getString(R.string.message_share_to_clipboard_success), Toast.LENGTH_SHORT).show();
 
-                            Toast.makeText(context, getResources().getString(R.string.message_share_to_clipboard_success), Toast.LENGTH_SHORT).show();
+                    // close drawer
 
-                            // close drawer
+                    mDrawer.closeDrawer();
+                    break;
 
-                            mDrawer.closeDrawer();
-                            break;
+                case 3: // share to whatsapp
 
-                        case 3: // share to whatsapp
-
-                            builder = new ShareIntentBuilder(context);
-                            intent = builder
-                                    .setText(shareText)
-                                    .setImage(R.raw.icon)
-                                    .setPackage("com.whatsapp")
-                                    .build();
-                            try {
-                                startActivity(intent);
-                            } catch (ActivityNotFoundException e) {
-                                Log.e(TAG,e.getMessage());
-                                Toast.makeText(context, "Whatsapp is not installed!", Toast.LENGTH_SHORT).show();
-                            }
-
-                            break;
-
-                        default:
-                            Log.w(TAG,"Unknown drawer option "+ position);
+                    builder = new ShareIntentBuilder(context);
+                    intent = builder
+                            .setText(shareText)
+                            .setImage(R.raw.icon)
+                            .setPackage("com.whatsapp")
+                            .build();
+                    try {
+                        startActivity(intent);
+                    } catch (ActivityNotFoundException e) {
+                        Log.e(TAG,e.getMessage());
+                        Toast.makeText(context, "Whatsapp is not installed!", Toast.LENGTH_SHORT).show();
                     }
 
-                    return true;
-                }
-            })
-            .build();
+                    break;
+
+                default:
+                    Log.w(TAG,"Unknown drawer option "+ position);
+            }
+
+            return true;
+        });
 
         // this avoids having any item appear "selected"
         mDrawer.setSelection(0);
