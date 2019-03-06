@@ -17,9 +17,11 @@ import com.mikepenz.materialdrawer.util.DrawerImageLoader
 import com.squareup.picasso.Picasso
 import edu.uoc.gruizto.mybooks.R
 
-private const val PROFILE_PICTURE_URL = "https://lh3.googleusercontent.com/-xNpsxtjuGhw/W64vqH_Zk3I/AAAAAAAAACk/4cS2_mewPEcE0B1_894bisk65mLnyqFlQCEwYBhgL/portrait-face2.png"
-private const val PROFILE_NAME = "Gerard Ruiz"
-private const val PROFILE_EMAIL = "gruizto@uoc.edu"
+object ProfileData {
+    const val pictureURL = "https://lh3.googleusercontent.com/-xNpsxtjuGhw/W64vqH_Zk3I/AAAAAAAAACk/4cS2_mewPEcE0B1_894bisk65mLnyqFlQCEwYBhgL/portrait-face2.png"
+    const val name = "Gerard Ruiz"
+    const val email = "gruizto@uoc.edu"
+}
 
 fun drawerItem (id:Long, @StringRes label:Int) :PrimaryDrawerItem =
         PrimaryDrawerItem()
@@ -51,9 +53,9 @@ class ShareDrawerBuilder(activity: Activity, toolbar: Toolbar?) {
         // Create the AccountHeader
 
         val profile: ProfileDrawerItem = ProfileDrawerItem()
-                .withName(PROFILE_NAME)
-                .withEmail(PROFILE_EMAIL)
-                .withIcon(PROFILE_PICTURE_URL)
+                .withName(ProfileData.name)
+                .withEmail(ProfileData.email)
+                .withIcon(ProfileData.pictureURL)
 
         val header: AccountHeader = AccountHeaderBuilder()
                 .withActivity(activity)
