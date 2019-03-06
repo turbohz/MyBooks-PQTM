@@ -2,6 +2,7 @@ package edu.uoc.gruizto.mybooks.activity;
 
 import android.app.NotificationManager;
 
+import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModelProviders;
 
 import android.content.ActivityNotFoundException;
@@ -48,6 +49,7 @@ import edu.uoc.gruizto.mybooks.fragment.BookDetailFragment;
 import edu.uoc.gruizto.mybooks.messaging.ChannelBuilder;
 import edu.uoc.gruizto.mybooks.model.AppViewModel;
 import edu.uoc.gruizto.mybooks.remote.Firebase;
+import edu.uoc.gruizto.mybooks.share.DrawerItemWithAction;
 import edu.uoc.gruizto.mybooks.share.ShareDrawerBuilder;
 import edu.uoc.gruizto.mybooks.share.ShareIntentBuilder;
 import io.reactivex.Completable;
@@ -125,59 +127,16 @@ public class BookListActivity extends AppCompatActivity {
 
         mDrawer.setOnDrawerItemClickListener((view, position, drawerItem) -> {
 
-            ShareIntentBuilder builder;
-            Intent intent = null;
-            Context context = BookListActivity.this;
-            String shareText = context.getResources().getString(R.string.app_description);
-
-            switch (position) {
-                case 1: // Generic share
-
-                    builder = new ShareIntentBuilder(context);
-                    intent = builder
-                            .setText(shareText)
-                            .setImage(R.raw.icon)
-                            .build();
-
-                    startActivity(Intent.createChooser(intent, getResources().getText(R.string.send_to)));
-                    break;
-
-                case 2: // copy to clipboard
-
-                    String label = context.getResources().getString(R.string.app_name);
-                    ClipboardManager clipboardManager = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
-                    clipboardManager.setPrimaryClip(ClipData.newPlainText(label, shareText));
-
-                    // notify the user
-
-                    Toast.makeText(context, getResources().getString(R.string.message_share_to_clipboard_success), Toast.LENGTH_SHORT).show();
-
-                    // close drawer
-
-                    mDrawer.closeDrawer();
-                    break;
-
-                case 3: // share to whatsapp
-
-                    builder = new ShareIntentBuilder(context);
-                    intent = builder
-                            .setText(shareText)
-                            .setImage(R.raw.icon)
-                            .setPackage("com.whatsapp")
-                            .build();
-                    try {
-                        startActivity(intent);
-                    } catch (ActivityNotFoundException e) {
-                        Log.e(TAG,e.getMessage());
-                        Toast.makeText(context, "Whatsapp is not installed!", Toast.LENGTH_SHORT).show();
-                    }
-
-                    break;
-
-                default:
-                    Log.w(TAG,"Unknown drawer option "+ position);
+            try {
+                String result = ((DrawerItemWithAction) drawerItem).performAction();
+                if (!result.isEmpty()) {
+                    Toast.makeText(BookListActivity.this, result, Toast.LENGTH_SHORT).show();
+                }
+            } catch (ClassCastException e) {
+                Log.e(TAG, "Unexpected DrawerItem without action");
             }
 
+            mDrawer.closeDrawer();
             return true;
         });
 

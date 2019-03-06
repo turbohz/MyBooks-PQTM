@@ -1,6 +1,7 @@
 package edu.uoc.gruizto.mybooks.share
 
 import android.app.Activity
+import android.content.*
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.widget.ImageView
@@ -36,7 +37,7 @@ abstract class DrawerItemWithAction(id:Long, @StringRes label:Int) : PrimaryDraw
 
 class ShareDrawerBuilder(activity: Activity, toolbar: Toolbar?) {
 
-    private val builder: DrawerBuilder = DrawerBuilder().withActivity(activity)
+    private var builder: DrawerBuilder = DrawerBuilder().withActivity(activity)
 
     constructor(activity: Activity) : this(activity,null)
 
@@ -78,19 +79,33 @@ class ShareDrawerBuilder(activity: Activity, toolbar: Toolbar?) {
                 // generic share
                 object : DrawerItemWithAction(1, R.string.drawer_item_share_with_app) {
                     override fun performAction(): String? {
-                        return "" // @TODO implement generic share
+                        val intent = ShareIntentBuilder(activity)
+                                .setText(shareText)
+                                .setImage(R.raw.icon)
+                                .build()
+                        val sendToText = activity.resources.getText(R.string.send_to)
+                        activity.startActivity(Intent.createChooser(intent, sendToText))
+                        return "" // no need for result
                     }
                 },
                 // copy to clipboard
                 object : DrawerItemWithAction(2, R.string.drawer_item_copy_to_clipboard) {
                     override fun performAction(): String? {
-                        return "" // @TODO implement copy to clipboard
+                        val label = activity.getResources().getString(R.string.app_name)
+                        val clipboardManager = activity.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                        clipboardManager.primaryClip = ClipData.newPlainText(label, shareText)
+                        return activity.resources.getString(R.string.message_share_to_clipboard_success)
                     }
                 },
                 // share to whatsapp
                 object : DrawerItemWithAction(3, R.string.drawer_item_share_to_whatsapp) {
                     override fun performAction(): String? {
-                        return "" // @TODO implement share to whatsapp
+                        val intent = ShareIntentBuilder(activity)
+                                .setText(shareText)
+                                .setImage(R.raw.icon)
+                                .setPackage("com.whatsapp")
+                                .build()
+                        return try { activity.startActivity(intent); "" } catch (e: ActivityNotFoundException) { "Whatsapp is not installed!" }
                     }
                 }
         )
