@@ -23,11 +23,16 @@ object ProfileData {
     const val email = "gruizto@uoc.edu"
 }
 
-fun drawerItem (id:Long, @StringRes label:Int) :PrimaryDrawerItem =
-        PrimaryDrawerItem()
-                .withIdentifier(id)
-                .withName(label)
-                .withSelectable(false)
+abstract class DrawerItemWithAction(id:Long, @StringRes label:Int) : PrimaryDrawerItem() {
+
+    init {
+        this.withIdentifier(id)
+        this.withName(label)
+        this.withSelectable(false)
+    }
+
+    abstract fun performAction():String?
+}
 
 class ShareDrawerBuilder(activity: Activity, toolbar: Toolbar?) {
 
@@ -67,10 +72,27 @@ class ShareDrawerBuilder(activity: Activity, toolbar: Toolbar?) {
 
         // initialise Drawer options
 
+        val shareText = activity.resources.getString(R.string.app_description)
+
         builder.addDrawerItems(
-            drawerItem(1, R.string.drawer_item_share_with_app),
-            drawerItem(2, R.string.drawer_item_copy_to_clipboard),
-            drawerItem(3, R.string.drawer_item_share_to_whatsapp)
+                // generic share
+                object : DrawerItemWithAction(1, R.string.drawer_item_share_with_app) {
+                    override fun performAction(): String? {
+                        return "" // @TODO implement generic share
+                    }
+                },
+                // copy to clipboard
+                object : DrawerItemWithAction(2, R.string.drawer_item_copy_to_clipboard) {
+                    override fun performAction(): String? {
+                        return "" // @TODO implement copy to clipboard
+                    }
+                },
+                // share to whatsapp
+                object : DrawerItemWithAction(3, R.string.drawer_item_share_to_whatsapp) {
+                    override fun performAction(): String? {
+                        return "" // @TODO implement share to whatsapp
+                    }
+                }
         )
 
         // attach to toolbar if provided
