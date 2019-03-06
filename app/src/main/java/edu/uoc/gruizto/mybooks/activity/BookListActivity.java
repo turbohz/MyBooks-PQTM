@@ -2,6 +2,7 @@ package edu.uoc.gruizto.mybooks.activity;
 
 import android.app.NotificationManager;
 
+import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModelProviders;
 
 import android.content.ActivityNotFoundException;
@@ -31,9 +32,6 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.mikepenz.materialdrawer.AccountHeader;
 import com.mikepenz.materialdrawer.AccountHeaderBuilder;
 import com.mikepenz.materialdrawer.Drawer;
-import com.mikepenz.materialdrawer.DrawerBuilder;
-import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
-import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
 import org.reactivestreams.Subscription;
@@ -51,6 +49,8 @@ import edu.uoc.gruizto.mybooks.fragment.BookDetailFragment;
 import edu.uoc.gruizto.mybooks.messaging.ChannelBuilder;
 import edu.uoc.gruizto.mybooks.model.AppViewModel;
 import edu.uoc.gruizto.mybooks.remote.Firebase;
+import edu.uoc.gruizto.mybooks.share.DrawerItemWithAction;
+import edu.uoc.gruizto.mybooks.share.ShareDrawerBuilder;
 import edu.uoc.gruizto.mybooks.share.ShareIntentBuilder;
 import io.reactivex.Completable;
 import io.reactivex.CompletableObserver;
@@ -123,95 +123,22 @@ public class BookListActivity extends AppCompatActivity {
 
         // Configure drawer
 
-        // Create the AccountHeader
-        AccountHeader header = new AccountHeaderBuilder()
-            .withActivity(this)
-            .addProfiles(
-                    new ProfileDrawerItem()
-                        .withName("Gerard Ruiz")
-                        .withEmail("gruizto@uoc.edu")
-                        .withIcon(getResources().getDrawable(R.drawable.portrait))
-            )
-            .build();
+        final Drawer mDrawer = new ShareDrawerBuilder(this, toolbar).build();
 
-        PrimaryDrawerItem item1 = new PrimaryDrawerItem().withName(R.string.drawer_item_share_with_app);
-        PrimaryDrawerItem item2 = new PrimaryDrawerItem().withName(R.string.drawer_item_copy_to_clipboard);
-        PrimaryDrawerItem item3 = new PrimaryDrawerItem().withName(R.string.drawer_item_share_to_whatsapp);
+        mDrawer.setOnDrawerItemClickListener((view, position, drawerItem) -> {
 
-        // create the drawer and remember the `mDrawer` result
-
-        mDrawer = new DrawerBuilder()
-            .withActivity(this)
-            .withAccountHeader(header)
-            .withToolbar(toolbar)
-            .addDrawerItems(
-                    // items are not sections that remain selected, they're actions
-                    // withSelectable(false) keeps them "unselected"
-                    item1.withIdentifier(1).withSelectable(false),
-                    item2.withIdentifier(2).withSelectable(false),
-                    item3.withIdentifier(3).withSelectable(false)
-            )
-            .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
-                @Override
-                public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
-
-                    ShareIntentBuilder builder;
-                    Intent intent = null;
-                    Context context = BookListActivity.this;
-                    String shareText = context.getResources().getString(R.string.app_description);
-
-                    switch (position) {
-                        case 1: // Generic share
-
-                            builder = new ShareIntentBuilder(context);
-                            intent = builder
-                                    .setText(shareText)
-                                    .setImage(R.raw.icon)
-                                    .build();
-
-                            startActivity(Intent.createChooser(intent, getResources().getText(R.string.send_to)));
-                            break;
-
-                        case 2: // copy to clipboard
-
-                            String label = context.getResources().getString(R.string.app_name);
-                            ClipboardManager clipboardManager = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
-                            clipboardManager.setPrimaryClip(ClipData.newPlainText(label, shareText));
-
-                            // notify the user
-
-                            Toast.makeText(context, getResources().getString(R.string.message_share_to_clipboard_success), Toast.LENGTH_SHORT).show();
-
-                            // close drawer
-
-                            mDrawer.closeDrawer();
-                            break;
-
-                        case 3: // share to whatsapp
-
-                            builder = new ShareIntentBuilder(context);
-                            intent = builder
-                                    .setText(shareText)
-                                    .setImage(R.raw.icon)
-                                    .setPackage("com.whatsapp")
-                                    .build();
-                            try {
-                                startActivity(intent);
-                            } catch (ActivityNotFoundException e) {
-                                Log.e(TAG,e.getMessage());
-                                Toast.makeText(context, "Whatsapp is not installed!", Toast.LENGTH_SHORT).show();
-                            }
-
-                            break;
-
-                        default:
-                            Log.w(TAG,"Unknown drawer option "+ position);
-                    }
-
-                    return true;
+            try {
+                String result = ((DrawerItemWithAction) drawerItem).performAction();
+                if (!result.isEmpty()) {
+                    Toast.makeText(BookListActivity.this, result, Toast.LENGTH_SHORT).show();
                 }
-            })
-            .build();
+            } catch (ClassCastException e) {
+                Log.e(TAG, "Unexpected DrawerItem without action");
+            }
+
+            mDrawer.closeDrawer();
+            return true;
+        });
 
         // this avoids having any item appear "selected"
         mDrawer.setSelection(0);
