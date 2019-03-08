@@ -25,7 +25,7 @@ object ProfileData {
     const val email = "gruizto@uoc.edu"
 }
 
-abstract class CallableDrawerItem(id:Long, @StringRes label:Int) : PrimaryDrawerItem(), Callable<String?> {
+abstract class CallableDrawerItem(id:Long, @StringRes label:Int) : PrimaryDrawerItem(), Callable<String> {
 
     init {
         this.withIdentifier(id)
@@ -33,7 +33,7 @@ abstract class CallableDrawerItem(id:Long, @StringRes label:Int) : PrimaryDrawer
         this.withSelectable(false)
     }
 
-    abstract override fun call():String?
+    abstract override fun call():String
 }
 
 class ShareDrawerBuilder(activity: Activity, toolbar: Toolbar?) {
@@ -79,7 +79,7 @@ class ShareDrawerBuilder(activity: Activity, toolbar: Toolbar?) {
         builder.addDrawerItems(
                 // generic share
                 object : CallableDrawerItem(1, R.string.drawer_item_share_with_app) {
-                    override fun call(): String? {
+                    override fun call(): String {
                         val intent = ShareIntentBuilder(activity)
                                 .setText(shareText)
                                 .setImage(R.raw.icon)
@@ -91,7 +91,7 @@ class ShareDrawerBuilder(activity: Activity, toolbar: Toolbar?) {
                 },
                 // copy to clipboard
                 object : CallableDrawerItem(2, R.string.drawer_item_copy_to_clipboard) {
-                    override fun call(): String? {
+                    override fun call(): String {
                         val label = activity.getResources().getString(R.string.app_name)
                         val clipboardManager = activity.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
                         clipboardManager.primaryClip = ClipData.newPlainText(label, shareText)
@@ -100,7 +100,7 @@ class ShareDrawerBuilder(activity: Activity, toolbar: Toolbar?) {
                 },
                 // share to whatsapp
                 object : CallableDrawerItem(3, R.string.drawer_item_share_to_whatsapp) {
-                    override fun call(): String? {
+                    override fun call(): String {
                         val intent = ShareIntentBuilder(activity)
                                 .setText(shareText)
                                 .setImage(R.raw.icon)
