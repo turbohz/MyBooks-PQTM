@@ -38,12 +38,10 @@ abstract class CallableDrawerItem(id:Long, @StringRes label:Int) : PrimaryDrawer
     abstract override fun call():String
 }
 
-class ShareDrawerBuilder(val activity: Activity, toolbar: Toolbar?) {
+class ShareDrawerBuilder(var activity: Activity, toolbar: Toolbar? = null) {
 
     private val TAG = ShareDrawerBuilder::class.java.name
     private var builder: DrawerBuilder = DrawerBuilder().withActivity(activity)
-
-    constructor(activity: Activity) : this(activity,null)
 
     init {
 
