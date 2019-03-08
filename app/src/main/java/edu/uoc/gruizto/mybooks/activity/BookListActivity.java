@@ -65,7 +65,6 @@ public class BookListActivity extends AppCompatActivity {
     private SimpleItemRecyclerViewAdapter mAdapter;
     private RecyclerView mRecyclerView;
     private String mCurrentBookId; // used in two pane view
-    private Drawer mDrawer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -111,10 +110,10 @@ public class BookListActivity extends AppCompatActivity {
 
         // Configure drawer
 
-        final Drawer mDrawer = new ShareDrawerBuilder(this, toolbar).build();
+        final Drawer drawer = new ShareDrawerBuilder(this, toolbar).build();
 
         // this avoids having any item appear "selected"
-        mDrawer.setSelection(0);
+        drawer.setSelection(0);
 
         if (BuildConfig.DEBUG) {
 
