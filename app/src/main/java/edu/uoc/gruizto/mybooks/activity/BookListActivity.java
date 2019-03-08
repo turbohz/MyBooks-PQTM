@@ -49,7 +49,7 @@ import edu.uoc.gruizto.mybooks.fragment.BookDetailFragment;
 import edu.uoc.gruizto.mybooks.messaging.ChannelBuilder;
 import edu.uoc.gruizto.mybooks.model.AppViewModel;
 import edu.uoc.gruizto.mybooks.remote.Firebase;
-import edu.uoc.gruizto.mybooks.share.DrawerItemWithAction;
+import edu.uoc.gruizto.mybooks.share.CallableDrawerItem;
 import edu.uoc.gruizto.mybooks.share.ShareDrawerBuilder;
 import edu.uoc.gruizto.mybooks.share.ShareIntentBuilder;
 import io.reactivex.Completable;
@@ -128,7 +128,7 @@ public class BookListActivity extends AppCompatActivity {
         mDrawer.setOnDrawerItemClickListener((view, position, drawerItem) -> {
 
             try {
-                String result = ((DrawerItemWithAction) drawerItem).performAction();
+                String result = ((CallableDrawerItem) drawerItem).call();
                 if (!result.isEmpty()) {
                     Toast.makeText(BookListActivity.this, result, Toast.LENGTH_SHORT).show();
                 }

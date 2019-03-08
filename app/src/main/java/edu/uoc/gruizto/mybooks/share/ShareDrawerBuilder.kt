@@ -17,6 +17,7 @@ import com.mikepenz.materialdrawer.util.AbstractDrawerImageLoader
 import com.mikepenz.materialdrawer.util.DrawerImageLoader
 import com.squareup.picasso.Picasso
 import edu.uoc.gruizto.mybooks.R
+import java.util.concurrent.Callable
 
 object ProfileData {
     const val pictureURL = "https://lh3.googleusercontent.com/-xNpsxtjuGhw/W64vqH_Zk3I/AAAAAAAAACk/4cS2_mewPEcE0B1_894bisk65mLnyqFlQCEwYBhgL/portrait-face2.png"
@@ -24,7 +25,7 @@ object ProfileData {
     const val email = "gruizto@uoc.edu"
 }
 
-abstract class DrawerItemWithAction(id:Long, @StringRes label:Int) : PrimaryDrawerItem() {
+abstract class CallableDrawerItem(id:Long, @StringRes label:Int) : PrimaryDrawerItem(), Callable<String?> {
 
     init {
         this.withIdentifier(id)
@@ -32,7 +33,7 @@ abstract class DrawerItemWithAction(id:Long, @StringRes label:Int) : PrimaryDraw
         this.withSelectable(false)
     }
 
-    abstract fun performAction():String?
+    abstract override fun call():String?
 }
 
 class ShareDrawerBuilder(activity: Activity, toolbar: Toolbar?) {
@@ -77,8 +78,8 @@ class ShareDrawerBuilder(activity: Activity, toolbar: Toolbar?) {
 
         builder.addDrawerItems(
                 // generic share
-                object : DrawerItemWithAction(1, R.string.drawer_item_share_with_app) {
-                    override fun performAction(): String? {
+                object : CallableDrawerItem(1, R.string.drawer_item_share_with_app) {
+                    override fun call(): String? {
                         val intent = ShareIntentBuilder(activity)
                                 .setText(shareText)
                                 .setImage(R.raw.icon)
@@ -89,8 +90,8 @@ class ShareDrawerBuilder(activity: Activity, toolbar: Toolbar?) {
                     }
                 },
                 // copy to clipboard
-                object : DrawerItemWithAction(2, R.string.drawer_item_copy_to_clipboard) {
-                    override fun performAction(): String? {
+                object : CallableDrawerItem(2, R.string.drawer_item_copy_to_clipboard) {
+                    override fun call(): String? {
                         val label = activity.getResources().getString(R.string.app_name)
                         val clipboardManager = activity.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
                         clipboardManager.primaryClip = ClipData.newPlainText(label, shareText)
@@ -98,8 +99,8 @@ class ShareDrawerBuilder(activity: Activity, toolbar: Toolbar?) {
                     }
                 },
                 // share to whatsapp
-                object : DrawerItemWithAction(3, R.string.drawer_item_share_to_whatsapp) {
-                    override fun performAction(): String? {
+                object : CallableDrawerItem(3, R.string.drawer_item_share_to_whatsapp) {
+                    override fun call(): String? {
                         val intent = ShareIntentBuilder(activity)
                                 .setText(shareText)
                                 .setImage(R.raw.icon)
