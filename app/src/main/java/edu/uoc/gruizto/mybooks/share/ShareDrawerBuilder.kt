@@ -4,7 +4,9 @@ import android.app.Activity
 import android.content.*
 import android.graphics.drawable.Drawable
 import android.net.Uri
+import android.util.Log
 import android.widget.ImageView
+import android.widget.Toast
 import androidx.appcompat.widget.Toolbar
 import androidx.annotation.StringRes
 import com.mikepenz.materialdrawer.AccountHeader
@@ -36,8 +38,9 @@ abstract class CallableDrawerItem(id:Long, @StringRes label:Int) : PrimaryDrawer
     abstract override fun call():String
 }
 
-class ShareDrawerBuilder(activity: Activity, toolbar: Toolbar?) {
+class ShareDrawerBuilder(val activity: Activity, toolbar: Toolbar?) {
 
+    private val TAG = ShareDrawerBuilder::class.java.name
     private var builder: DrawerBuilder = DrawerBuilder().withActivity(activity)
 
     constructor(activity: Activity) : this(activity,null)
@@ -111,12 +114,32 @@ class ShareDrawerBuilder(activity: Activity, toolbar: Toolbar?) {
                 }
         )
 
+
+
         // attach to toolbar if provided
 
         toolbar?.let { builder.withToolbar(it) }
     }
 
     fun build():Drawer {
-        return builder.build()
+
+        val drawer = builder.build()
+        // add item click handler, deferring action to item itself
+
+        drawer.setOnDrawerItemClickListener { _, _, drawerItem ->
+
+            try {
+                val result = (drawerItem as CallableDrawerItem).call()
+                if (!result.isEmpty()) {
+                    Toast.makeText(activity, result, Toast.LENGTH_SHORT).show()
+                }
+            } catch (e: ClassCastException) {
+                Log.e(TAG, "Unexpected DrawerItem without action")
+            }
+
+            drawer.closeDrawer()
+            true
+        }
+        return drawer
     }
 }

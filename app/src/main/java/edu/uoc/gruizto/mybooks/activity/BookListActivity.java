@@ -19,7 +19,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
@@ -41,7 +40,6 @@ import edu.uoc.gruizto.mybooks.fragment.BookDetailFragment;
 import edu.uoc.gruizto.mybooks.messaging.ChannelBuilder;
 import edu.uoc.gruizto.mybooks.model.AppViewModel;
 import edu.uoc.gruizto.mybooks.remote.Firebase;
-import edu.uoc.gruizto.mybooks.share.CallableDrawerItem;
 import edu.uoc.gruizto.mybooks.share.ShareDrawerBuilder;
 import io.reactivex.Completable;
 import io.reactivex.CompletableObserver;
@@ -114,21 +112,6 @@ public class BookListActivity extends AppCompatActivity {
         // Configure drawer
 
         final Drawer mDrawer = new ShareDrawerBuilder(this, toolbar).build();
-
-        mDrawer.setOnDrawerItemClickListener((view, position, drawerItem) -> {
-
-            try {
-                String result = ((CallableDrawerItem) drawerItem).call();
-                if (!result.isEmpty()) {
-                    Toast.makeText(BookListActivity.this, result, Toast.LENGTH_SHORT).show();
-                }
-            } catch (ClassCastException e) {
-                Log.e(TAG, "Unexpected DrawerItem without action");
-            }
-
-            mDrawer.closeDrawer();
-            return true;
-        });
 
         // this avoids having any item appear "selected"
         mDrawer.setSelection(0);
