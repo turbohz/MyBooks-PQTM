@@ -2,13 +2,8 @@ package edu.uoc.gruizto.mybooks.activity;
 
 import android.app.NotificationManager;
 
-import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModelProviders;
 
-import android.content.ActivityNotFoundException;
-import android.content.ClipData;
-import android.content.ClipboardManager;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import androidx.annotation.LayoutRes;
@@ -29,10 +24,7 @@ import android.widget.Toast;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.firebase.auth.FirebaseAuth;
-import com.mikepenz.materialdrawer.AccountHeader;
-import com.mikepenz.materialdrawer.AccountHeaderBuilder;
 import com.mikepenz.materialdrawer.Drawer;
-import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
 import org.reactivestreams.Subscription;
 
@@ -51,7 +43,6 @@ import edu.uoc.gruizto.mybooks.model.AppViewModel;
 import edu.uoc.gruizto.mybooks.remote.Firebase;
 import edu.uoc.gruizto.mybooks.share.CallableDrawerItem;
 import edu.uoc.gruizto.mybooks.share.ShareDrawerBuilder;
-import edu.uoc.gruizto.mybooks.share.ShareIntentBuilder;
 import io.reactivex.Completable;
 import io.reactivex.CompletableObserver;
 import io.reactivex.Flowable;
@@ -60,7 +51,6 @@ import io.reactivex.SingleObserver;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 public class BookListActivity extends AppCompatActivity {
 
