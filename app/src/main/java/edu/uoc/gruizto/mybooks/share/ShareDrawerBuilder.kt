@@ -45,10 +45,10 @@ class ShareDrawerBuilder(val activity: Activity, toolbar: Toolbar?) {
 
     constructor(activity: Activity) : this(activity,null)
 
-    // initialise DrawerImageLoader to use Picasso
-    // it is used to download the Profile photo
-
     init {
+
+        // initialise DrawerImageLoader to use Picasso
+        // it is used to download the Profile photo
 
         DrawerImageLoader.init(object : AbstractDrawerImageLoader() {
             override fun set(imageView: ImageView?, uri: Uri?, placeholder: Drawable?) {
