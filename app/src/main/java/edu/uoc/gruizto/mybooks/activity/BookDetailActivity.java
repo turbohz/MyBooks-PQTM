@@ -23,6 +23,7 @@ import androidx.core.content.FileProvider;
 import androidx.lifecycle.ViewModelProviders;
 import edu.uoc.gruizto.mybooks.R;
 import edu.uoc.gruizto.mybooks.db.Book;
+import edu.uoc.gruizto.mybooks.form.PurchaseRequest;
 import edu.uoc.gruizto.mybooks.fragment.BookDetailFragment;
 import edu.uoc.gruizto.mybooks.model.AppViewModel;
 import edu.uoc.gruizto.mybooks.storage.StorageHelper;
@@ -134,15 +135,8 @@ public class BookDetailActivity extends AppCompatActivity {
                     @Override
                     public boolean shouldOverrideUrlLoading(WebView view, String url) {
 
-                        boolean success = false;
-
-                        // Validate parameters
-
-                        Uri uri = Uri.parse(url);
-
-                        success =   uri.getQueryParameter("name") != "" &&
-                                    uri.getQueryParameter("num")  != "" &&
-                                    uri.getQueryParameter("date") != "";
+                        final PurchaseRequest request = new PurchaseRequest(url);
+                        boolean success = request.isValid();
 
                         if (success) {
 
