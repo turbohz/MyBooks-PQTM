@@ -8,11 +8,11 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.ActionBar;
 import androidx.core.app.NavUtils;
+import androidx.webkit.WebViewClientCompat;
 
 import android.view.MenuItem;
 import android.view.View;
 import android.webkit.WebView;
-import android.webkit.WebViewClient;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
@@ -130,7 +130,7 @@ public class BookDetailActivity extends AppCompatActivity {
                 webView.loadUrl(formUri.toString());
                 webView.setVisibility(View.VISIBLE);
 
-                webView.setWebViewClient(new WebViewClient(){
+                webView.setWebViewClient(new WebViewClientCompat(){
                     @Override
                     public boolean shouldOverrideUrlLoading(WebView view, String url) {
 
